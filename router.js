@@ -2,13 +2,14 @@ import { Router } from "express";
 import { allUsers, creationUser, rechercheUser } from "./controllers/Users.js"
 import { allChallenges, creationChallenge, rechercheChallengeActive, rechercheChallengeByTitle } from "./controllers/Challenges.js";
 import { creationParticipation, allParticipations, rechercheParticipationByID, rechercheParticipationByUser_ID } from "./controllers/participations.js"
-
+import { authentification } from "./controllers/Authentification.js";
 
 const router = Router();
 
 router.get("/users", allUsers);
 router.post("/users", creationUser);
 router.get("/users/:id", rechercheUser);
+router.post("/auth/login", authentification);
 
 router.post("/challenges", creationChallenge);
 router.get("/challenges", allChallenges);

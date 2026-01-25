@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  color: #333;
+  background-color: rgba(5, 173, 78, 0.774);
+}
+
+header {
+
+
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+}
+
+
+.menu {
+  display: flex;
+  gap: 20px;
+}
+
+.menu a {
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+}
+
+div {
+  display: flex;
+  justify-content: center;
+  padding-top: 30px;
+}
+</style>
+
+<header>
+  <nav class="menu">
+    <a href="index.html">Accueil</a>
+    <a href="connexion_user.html">Connexion</a>
+    <a href="challenges.html">challenges</a>
+    <a href="creation_challenge.html">création des challenges</a>
+  </nav>
+</header>
+
+<body>
+    <form action="/api/challenges" method="POST" enctype="multipart/form-data">
+  <input type="text" name="title" placeholder="Titre du challenge">
+  <input type="text" name="description" placeholder="Description">
+  <input type="date" name="date_start">
+  <input type="date" name="date_end">
+  <input type="file" name="uploaded_file"> <!-- MUST match multer -->
+  <button type="submit">Créer Challenge</button>
+</form>
+</body>
+</html>

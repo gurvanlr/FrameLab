@@ -18,6 +18,7 @@ export async function getChallengeByTitle(challengeTitle) {
 }
 
 export async function getChallengeActive() {
-    const rows = await db.getall('SELECT * FROM chellenges WHERE date_start <= NOW() && date_end >= NOW()')
+    //const rows = await db.getall('SELECT * FROM challenges WHERE date_start <= NOW() && date_end >= NOW()')
+    const rows = await db.getall("SELECT * FROM challenges WHERE is_active = 1")
     return rows;
 }

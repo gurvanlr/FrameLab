@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  color: #333;
+  background-color: rgba(5, 173, 78, 0.774);
+}
+
+header {
+
+
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+}
+
+
+.menu {
+  display: flex;
+  gap: 20px;
+}
+
+.menu a {
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+}
+
+div {
+  display: flex;
+  justify-content: center;
+  padding-top: 30px;
+}
+</style>
+
+<header>
+  <nav class="menu">
+    <a href="index.html">Accueil</a>
+    <a href="connexion_user.html">Connexion</a>
+    <a href="challenges.html">challenges</a>
+    <a href="creation_challenge.html">création des challenges</a>
+  </nav>
+</header>
+<body>
+  <div>
+    <table>
+      <tbody id="participationBody"></tbody>
+    </table>
+  </div>
+</body>
+
+<script>
+  const participationBody = document.getElementById("participationBody");
+
+  async function active_challenge () {
+    const resp = await fetch ("/api/challenges/active");
+    const challenges = await resp.json();
+    return challenges;
+  }
+
+  async function participationByChallengeId(id) {
+    const resp = await fetch ("/api/challenges/"+id+"/participations");
+    const data = await resp.json();
+    return data;
+  }
+    
+
+  async function init() {
+    const challenges = await active_challenge();
+    console.log(challenges);
+
+    for (let challenge of challenges) {
+      const participations = await participationByChallengeId(challenge.id);
+
+      for (let participation of participations) {
+        const tr = document.createElement("tr");
+
+        const tdDate = document.createElement("td")
+        tdDate.textContent = participation.created;
+        tr.appendChild(tdDate);
+
+        const tdName = document.createElement("td")
+        tdName.textContent = participation.name + " " + participation.firstname;
+        tr.appendChild(tdName);
+
+        const tdImg = document.createElement("td")
+        const img = document.createElement("img")
+        img.src = "/upload/" + participation.url;
+        tdImg.appendChild(img);
+        tr.appendChild(tdImg);
+
+        participationBody.appendChild(tr)
+      }
+    }
+  }
+
+  init();
+</script>
+
+</html>
+
+

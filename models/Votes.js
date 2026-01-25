@@ -1,7 +1,7 @@
 import db from "../database.js"
 
 export async function postVote(creative_note,technical_note,theme_note) {
-    const rows = db.insert ("INSERT INTO votes (creative_note,technical_note,theme_note,date) VALUES ('?','?','?',NOW())", 
+    const rows = db.insert ("INSERT INTO votes (creative_note,technical_note,theme_note,created) VALUES ('?','?','?',NOW())", 
        [creative_note,technical_note,theme_note]
      );
      return rows;

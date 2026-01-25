@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  color: #333;
+  background-color: rgba(5, 173, 78, 0.774);
+}
+
+header {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+}
+
+.menu {
+  display: flex;
+  gap: 20px;
+}
+
+.menu a {
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+}
+
+div {
+  display: flex;
+  justify-content: center;
+  padding-top: 30px;
+}
+
+.button {
+    display: flex;
+  justify-content: center;
+  padding: 20px 0;
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+}
+
+
+</style>
+
+<header>
+  <nav class="menu">
+    <a href="index.html">Accueil</a>
+    <a href="connexion_user.html">Connexion</a>
+    <a href="challenges.html">challenges</a>
+    <a href="creation_challenge.html">création des challenges</a>
+  </nav>
+
+<body>
+  <div>
+    <table>
+      <tbody id="challengeBody"></tbody>
+    </table>
+  </div>
+</body>
+
+<script>
+
+const challengeBody = document.getElementById("challengeBody");
+
+    async function fetchchallenges() {
+        const resp = await fetch ("/api/challenges");
+        const data = await resp.json();
+        return data;
+    }
+
+    async function init() {
+        const challenges = await fetchchallenges();
+
+        for (let challenge of challenges){
+            const tr = document.createElement("tr");
+
+            const td_title =document.createElement("td");
+            td_title.textContent = challenge.title;
+            tr.appendChild(td_title);
+
+            const td_description = document.createElement ("td");
+            td_description.textContent = challenge.description;
+            tr.appendChild(td_description);
+
+            const td_img = document.createElement ("td");
+            const img = document.createElement("img");
+            img.src = challenge.url
+            td_img.appendChild(img);
+            tr.appendChild(td_img);
+
+
+            const td_dateStart =  document.createElement("td");
+            td_dateStart.textContent = challenge.date_start;
+            tr.appendChild(td_dateStart);
+
+
+            const td_dateEnd = document.createElement("td");
+            td_dateEnd.textContent = challenge.date_end;
+            tr.appendChild(td_dateEnd);
+
+            challengeBody.appendChild(tr)
+        }
+    }
+
+    init();
+
+</script>

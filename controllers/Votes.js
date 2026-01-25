@@ -2,12 +2,7 @@ import { get } from "http";
 import {postVote,getvotes,getVoteByID,getVoteByParticipationID} from "../models/Votes.js"
 
 export async function createVote(request,response) {
-    //try {
-        const vote = await postVote(request.params.creative_note,request.params.technical_note,request.params.theme_note);
-    //}catch(e) {
-        console.log(e);
-        response.json(e)
-    //}
+        const vote = await postVote(request.body.creative_note,request.body.technical_note,request.body.theme_note);
 }
 
 export async function allVotes(request,response) {

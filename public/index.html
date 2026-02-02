@@ -15,8 +15,6 @@ body {
 }
 
 header {
-
-
   display: flex;
   justify-content: center;
   padding: 20px 0;
@@ -86,12 +84,13 @@ div {
 
   async function init() {
 
-    const user = await userActive();
-    if (user != null) {
-      const div = document.createElement("div");
-      div.textContent = "Bonjour, " + user.name + " " + user.firstname;
-      connexion.classList.add("hide");
-    }
+    // a reprendre
+    //const user = await userActive();
+    //if (user != null) {
+      //const div = document.createElement("div");
+      //div.textContent = "Bonjour, " + user.name + " " + user.firstname;
+      //connexion.classList.add("hide");
+    //}
 
     const challenges = await active_challenge();
     console.log(challenges);

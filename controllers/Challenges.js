@@ -4,7 +4,7 @@ import { postChallenge, getChallenges, getChallengeByTitle, getChallengeActive }
 export async function creationChallenge(request, response) {
     const url = "/upload/" + request.file.filename;
     const challenge = await postChallenge(request.body.title, request.body.description, url, request.body.date_start, request.body.date_end);
-    response.json(challenge)
+    response.redirect("/challenges.html");
 }
 
 export async function allChallenges(request, response) {

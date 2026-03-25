@@ -45,29 +45,77 @@ div {
   color: #333;
   font-weight: bold;
 }
+
+.hide {
+  display: none;
+}
 </style>
 
 <header>
-  <nav class="menu">
+  <nav class="menu" id="menu">
     <a href="index.html">Accueil</a>
-    <a href="connexion_user.html">Connexion</a>
+    <a href="connexion_user.html" id="connexion">Connexion</a>
     <a href="challenges.html">challenges</a>
     <a href="creation_challenge.html">création des challenges</a>
   </nav>
 </header>
 
 <body>
-  <form action="/api/auth/login"  method="post">
-  <div class="form-group">
-    <input type="varchar" class="form-control" placeholder="écrit un mail" name="mail">
-    <input type="varchar" class="form-control" placeholder="écrit un mot de passe" name="password">
-    <input type="submit">
-  </div>
+  <form id="loginform">
+    <input type="text" class="form-control" placeholder="écrit un mail" name="mail" required>
+    <input type="password" class="form-control" placeholder="écrit un mot de passe" name="password" required>
+    <button type="submit"> Connexion</button>
 </form>
 <a href="creation_user.html" class="button">Création de compte</a>
 </body>
-</html>
 
 <script>
-  
+  const menu = document.getElementById("menu");
+  const form = document.getElementById("loginform");
+
+  form.addEventListener("submit", async (e) => {e.preventDefault()
+
+    const formData = {
+    mail: form.mail.value,
+    password: form.password.value
+  };
+
+  const response = await fetch ("/api/auth/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(formData),
+    credentials: "include"
+  })
+
+  const data = await response.json();
+
+  if (data.succes) {
+    window.location.href = "/index.html"
+  }else{
+    alert("Email ou mot de passe incorrect");
+  }
+  });
+
+  async function userActive() {
+    const resp = await fetch ("/api/users/me", {credentials : "include"});
+    const data = await resp.json();
+    return data;
+  }
+
+  async function init() {
+
+    const user = await userActive();
+    console.log(user);
+    if (user && user.id) {
+      const span = document.createElement("span");
+      span.textContent = "Bonjour, " + user.firstname + " " + user.name;
+      menu.appendChild(span);
+      connexion.classList.add("hide");
+    }
+
+  }
+
+  init();
 </script>

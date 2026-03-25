@@ -52,13 +52,16 @@ div {
   font-weight: bold;
 }
 
+.hide {
+  display: none;
+}
 
 </style>
 
 <header>
-  <nav class="menu">
+  <nav class="menu" id="menu">
     <a href="index.html">Accueil</a>
-    <a href="connexion_user.html">Connexion</a>
+    <a href="connexion_user.html" id="connexion">Connexion</a>
     <a href="challenges.html">challenges</a>
     <a href="creation_challenge.html">création des challenges</a>
   </nav>
@@ -73,7 +76,7 @@ div {
 </body>
 
 <script>
-
+const menu = document.getElementById("menu");
 const challengeBody = document.getElementById("challengeBody");
 
     async function fetchchallenges() {
@@ -82,7 +85,24 @@ const challengeBody = document.getElementById("challengeBody");
         return data;
     }
 
+    async function userActive() {
+    const resp = await fetch ("/api/users/me", {credentials : "include"});
+    const data = await resp.json();
+    return data;
+  }
+
     async function init() {
+
+      const user = await userActive();
+    console.log(user);
+    if (user && user.id) {
+      const span = document.createElement("span");
+      span.textContent = "Bonjour, " + user.firstname + " " + user.name;
+      menu.appendChild(span);
+      connexion.classList.add("hide");
+    }
+
+
         const challenges = await fetchchallenges();
 
         for (let challenge of challenges){

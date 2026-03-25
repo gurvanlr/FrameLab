@@ -36,12 +36,16 @@ div {
   justify-content: center;
   padding-top: 30px;
 }
+
+.hide {
+  display: none;
+}
 </style>
 
 <header>
-  <nav class="menu">
+  <nav class="menu" id="menu">
     <a href="index.html">Accueil</a>
-    <a href="connexion_user.html">Connexion</a>
+    <a href="connexion_user.html" id="connexion">Connexion</a>
     <a href="challenges.html">challenges</a>
     <a href="creation_challenge.html">création des challenges</a>
   </nav>
@@ -50,18 +54,72 @@ div {
 <body>
   <form id="registerform">
   <div class="form-group">
-    <input type="text" class="form-control" placeholder="écrit un mail" name="mail">
-    <input type="text" class="form-control" placeholder="écrit un mot de passe" name="password">
+    <input type="mail" class="form-control" placeholder="écrit un mail" name="mail">
+    <input type="password" class="form-control" placeholder="écrit un mot de passe" name="password">
     <input type="text" class="form-control" placeholder="écrit un nom" name="name">
     <input type="text" class="form-control" placeholder="écrit un prénom" name="firstname">
-    <input type="submit" placeholder="Créer"></input>
+    <button type="submit" placeholder="Créer">Créer</button>
   </div>
+  <div id="validationLink"></div>
 </form>
 
 </body>
 </html>
 
 <script>
+  const menu = document.getElementById("menu");
+  const form = document.getElementById("registerform");
+  const validationLink = document.getElementById("validationLink")
 
+  form.addEventListener("submit", async (e) => {e.preventDefault()
 
+    const formData = {
+    mail: form.mail.value,
+    password: form.password.value,
+    name: form.name.value,
+    firstname: form.firstname.value
+  };
+
+  const response = await fetch ("/api/users", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(formData),
+    credentials: "include"
+  })
+
+  const data = await response.json();
+  
+  if (data.success) {
+    validationLink.textContent = "merci d'appuyer sur ce lien pour valider le compte";
+    const link = document.createElement("a");
+    link.textContent = "validation";
+    link.href = "validation.html";
+    validationLink.appendChild(link);
+  }else{
+    alert("Email déjà utilisé");
+  }
+  });
+
+  async function userActive() {
+    const resp = await fetch ("/api/users/me", {credentials : "include"});
+    const data = await resp.json();
+    return data;
+  }
+
+  async function init() {
+
+    const user = await userActive();
+    console.log(user);
+    if (user && user.id) {
+      const span = document.createElement("span");
+      span.textContent = "Bonjour, " + user.firstname + " " + user.name;
+      menu.appendChild(span);
+      connexion.classList.add("hide");
+    }
+
+  }
+
+  init();
 </script>

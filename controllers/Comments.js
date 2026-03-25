@@ -1,13 +1,8 @@
 import {postcomment,getcomments,getCommentByID, getCommentByParticipation_id} from "../models/Comments.js"
 
-export async function createComments(request,response) {
-    const comment = await postcomment(request.params.contentcomment);
+export async function postComment(request,response) {
+    const comment = await postcomment(request.body.content,request.body.user_id,request.body.participation_id);
     response.json(comment);
-}
-
-export async function allComments(request,response) {
-    const comments = await getcomments();
-    response.json(comments);
 }
 
 export async function rechercheComment(request,response) {
@@ -15,8 +10,9 @@ export async function rechercheComment(request,response) {
         const comment = await getCommentByID(request.params.id);
         response.json(comment);
     }
-    else if (request.query.participation_id) {
-        const comment = await getCommentByParticipation_id();
-        response.json(comment);
-    } 
+}
+
+export async function getCommentByParticipationId(request,response) {
+    const comments = await getCommentByParticipation_id(request.params.id);
+    response.json(comments);
 }

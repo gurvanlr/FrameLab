@@ -2,9 +2,7 @@ import express from "express";
 
 // Import de la table de routage
 import router from "./router.js";
-
 import cors from "cors";
-
 import cookieParser from "cookie-parser";
 
 // Creation du serveur

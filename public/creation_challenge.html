@@ -39,25 +39,73 @@ div {
   justify-content: center;
   padding-top: 30px;
 }
+
+.hide {
+  display: none;
+}
 </style>
 
 <header>
-  <nav class="menu">
+  <nav class="menu" id="menu">
     <a href="index.html">Accueil</a>
-    <a href="connexion_user.html">Connexion</a>
+    <a href="connexion_user.html" id="connexion">Connexion</a>
     <a href="challenges.html">challenges</a>
     <a href="creation_challenge.html">création des challenges</a>
   </nav>
 </header>
 
 <body>
-    <form action="/api/challenges" method="POST" enctype="multipart/form-data">
+    <form id="form" method="post" enctype="multipart/form-data">
   <input type="text" name="title" placeholder="Titre du challenge">
   <input type="text" name="description" placeholder="Description">
   <input type="date" name="date_start">
   <input type="date" name="date_end">
-  <input type="file" name="uploaded_file"> <!-- MUST match multer -->
+  <input type="file" name="uploaded_file"> 
   <button type="submit">Créer Challenge</button>
 </form>
 </body>
-</html>
+
+<script>
+  const menu = document.getElementById("menu");
+  const form = document.getElementById("form");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const formData = new FormData(form);
+
+    const response = await fetch ("/api/challenges", {
+    method: "POST",
+    body:formData,
+    credentials: "include"
+  })
+
+  const data = await response.json();
+
+  if (data.succes) {
+    window.location.href = "/challenges.html"
+  }else{
+    alert("Erreur à la création du challenge");
+  };
+});
+
+async function userActive() {
+    const resp = await fetch ("/api/users/me", {credentials : "include"});
+    const data = await resp.json();
+    return data;
+  }
+
+  async function init() {
+
+    const user = await userActive();
+    console.log(user);
+    if (user && user.id) {
+      const span = document.createElement("span");
+      span.textContent = "Bonjour, " + user.firstname + " " + user.name;
+      menu.appendChild(span);
+      connexion.classList.add("hide");
+    }
+
+  }
+
+  init();
+</script>

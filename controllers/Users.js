@@ -1,5 +1,5 @@
 import { error } from "console";
-import {getUsers,postUser,getUser,getMail, auth } from "../models/Users.js";
+import {getUsers,postUser,getUser,getMail, auth, getUserByMail } from "../models/Users.js";
 import bcrypt from "bcrypt";
 
 export async function allUsers(request, response) {
@@ -16,8 +16,16 @@ export async function creationUser(request, response) {
     }
     const password = await bcrypt.hash(request.body.password, 10);
     const name = await bcrypt.hash(request.body.name, 10);
-    const user = await postUser(request.body.mail,password,request.body.name,request.body.firstname);
-    response.redirect("/encryption.html");
+
+    const create_user = await postUser(request.body.mail,password,request.body.name,request.body.firstname);
+
+    const user = await getUserByMail(request.body.mail);
+    const payload = { id: user.id };
+    const validationToken = jwt.sign(payload, "lotrmieuxquestarwars", { expiresIn: "1 hours" });
+    response.json({
+        success: true,
+        token: validationToken
+    });
 }
 
 export async function  rechercheUser(request,response) {
@@ -46,4 +54,8 @@ export async function connexion_user(request,response) {
         
     }
     return response.json("l'adresse mail ou le mot de passe est incorect");
+}
+
+export async function validation (request, response) {
+    
 }

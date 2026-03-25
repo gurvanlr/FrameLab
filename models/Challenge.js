@@ -1,7 +1,7 @@
 import db from "../database.js";
 
 export async function postChallenge(title,description,URL,date_start,date_end) {
-    const rows = await db.insert('INSERT INTO challenges (title,description,url,date_start,date_end,is_active) VALUES (?,?,?,?,?,1)',
+    const rows = await db.insert('INSERT INTO challenges (title,description,url,date_start,date_end,is_active) VALUES (?,?,?,?,?,0)',
         [title,description,URL,date_start,date_end]
     )
     return rows

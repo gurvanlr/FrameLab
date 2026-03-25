@@ -6,10 +6,10 @@ export async function authByCredentials(request, response) {
     const user = await getUserByMail(request.body.mail);
     if (await bcrypt.compare(request.body.password, user.password)) {
         const payload = { id: user.id };
-        const token = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: "7 days" });
+        const token = jwt.sign(payload, "lotrmieuxquestarwars", { expiresIn: "7 days" }); //process.env.SECRET_KEY
         response.cookie("token", token, { maxAge: 1000 * 60 * 60 * 24 * 7 });
         response.json({
-            succes: true,
+            success: true,
             token: token
         })
     } else {
@@ -31,7 +31,7 @@ export async function authbyTokens(request, response, next) {
     
     if (token) {
         try {
-            const tokenData = jwt.verify(token, process.env.SECRET_KEY);
+            const tokenData = jwt.verify(token, "lotrmieuxquestarwars");
             const user = await getUser(tokenData.id);
             if (user) {
                 request.user = user;
@@ -46,5 +46,13 @@ export async function authbyTokens(request, response, next) {
     response.status(401).json({
         succes: false,
         message: "Token manquant, invalide ou expiré"
+    });
+}
+
+export async function logout(request,response) {
+    response.clearCookie("token");
+    response.json({
+        succes: true,
+        message: "Déconnecté"
     });
 }

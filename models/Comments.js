@@ -1,7 +1,7 @@
 import db from "../database.js"
 
-export async function postcomment(commentcontent) {
-    const rows = await db.insert("INSERT INTO comments (content,date) VALUES ('?',NOW())",[commentcontent])
+export async function postcomment(content, user_id, participation_id) {
+    const rows = await db.insert("INSERT INTO comments (content,created,is_visible,user_id,participation_id) VALUES (?,NOW(),1,?,?)",[content,user_id,participation_id])
     return rows;
 }
 

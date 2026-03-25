@@ -30,3 +30,8 @@ export async function auth(email) {
     const row = await db.getrow ("SELECT * FROM users WHERE email LIKE ?", [email]);
     return row;
 }
+
+export async function is_active(id) {
+    const row =  await db.update ("UPDATE users SET validated WHERE id = ?", [id]);
+    return row ; 
+}

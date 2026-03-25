@@ -25,3 +25,4 @@ export async function getParticipationAndUserActive(id){
     const rows = await db.getall ("SELECT participations.id AS participation_id,participations.url,participations.created,users.id AS user_id,users.name,users.firstname FROM participations JOIN users on users.id = participations.user_id WHERE participations.challenge_id = ?",[id]);
     return rows;
 }
+

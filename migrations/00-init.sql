@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS  users (
 	firstname   VARCHAR(127) NOT NULL,
 	is_admin    BOOLEAN NOT NULL,
 	registrated DATETIME
-)
+);
 
 CREATE TABLE IF NOT EXISTS challenges (
 	id INT PRIMARY KEY AUTO_INCREMENT,
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS challenges (
 	date_start DATE NOT NULL,
 	date_end DATE NOT NULL,
 	is_active BOOLEAN NOT NULL
-)
+);
 
 CREATE TABLE IF NOT EXISTS participations (
     id            INT PRIMARY KEY AUTO_INCREMENT,
@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS votes (
 	participation_id INT REFERENCES participations(id),
 	user_id INT REFERENCES users(id),
 	UNIQUE INDEX (user_id,participation_id) 
-)
+);
 
 CREATE TABLE IF NOT EXISTS comments (
 	id INT PRIMARY KEY AUTO_INCREMENT,
@@ -48,4 +48,4 @@ CREATE TABLE IF NOT EXISTS comments (
 	is_visible BOOLEAN,
 	user_id INT REFERENCES users(id),
 	participation_id INT REFERENCES participations(id)
-)
+);

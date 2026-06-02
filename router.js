@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { creationUser, getMe, rechercheUser } from "./controllers/Users.js"
+import { creationUser, getMe, rechercheUser, validation } from "./controllers/Users.js"
 import { allChallenges, creationChallenge, rechercheChallengeActive, rechercheChallengeByTitle } from "./controllers/Challenges.js";
 import { creationParticipation, allParticipations, rechercheParticipationByID, rechercheParticipationByUser_ID, getParticipationAndUserByChallenge } from "./controllers/participations.js"
 import { authByCredentials, authbyTokens, logout } from "./controllers/Authentification.js";
@@ -15,7 +15,7 @@ router.post("/users", creationUser);
 router.get("/users/me", authbyTokens, getMe);
 router.get("/users/:id", rechercheUser);
 router.post("/auth/login", authByCredentials);
-//router.put("/users/:id/?",[validationToken],  );
+router.put("/users/:id/:validation_token",validation);
 router.post("/auth/logout", logout);
 
 router.post("/challenges", upload.single("uploaded_file"), creationChallenge);

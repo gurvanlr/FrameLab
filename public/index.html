@@ -2,330 +2,402 @@
 <html lang="fr">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+    <meta charset="UTF-8">
+    <title>Participations</title>
 </head>
-
-<style>
-  body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    color: #333;
-    background-color: rgba(5, 173, 78, 0.774);
-  }
-
-  header {
-    display: flex;
-    justify-content: center;
-    padding: 20px 0;
-  }
-
-
-  .menu {
-    display: flex;
-    gap: 20px;
-  }
-
-  .menu a {
-    text-decoration: none;
-    color: #333;
-    font-weight: bold;
-  }
-
-  /*div {
-    display: flex;
-    justify-content: center;
-    padding-top: 30px;
-  }*/
-
-  .hide {
-    display: none;
-  }
-
-  .spacer {
-    flex-grow: 1;
-  }
-
-  .participation {
-    display: block;
-    position: relative;
-    max-width: 900px;
-    padding: 24px;
-    background: gray;
-    border-radius: 5px;
-    margin: auto;
-
-    .header {
-      display: flex;
-      font-size: .8em;
-      color: #333;
-
-      .title, .username {
-        font-size: 1.5em;
-        color: black;
-      }
-    }
-
-    .main {
-      padding-top: 24px;
-      margin: auto;
-      width: max-content;
-      width:100%;
-
-      img {
-        max-width: 100%;
-      }
-    }
-  }
-</style>
-
-<header id="header">
-  <nav class="menu" id="menu">
-    <a href="index.html">Accueil</a>
-    <a id="connexion" href="connexion_user.html">Connexion</a>
-    <a href="challenges.html">challenges</a>
-    <a href="creation_challenge.html">création des challenges</a>
-    <a href="indexV2.html">test index</a>
-    <button id="logout" class="hide">Déconnexion</button>
-  </nav>
-</header>
 
 <body>
 
-  <div id="participation_2" class="participation">
-    <div class="header">
-      <span class="title">Ma super partoche</span>
-      &nbsp;by&nbsp;
-      <span class="username">Roger</span>
-      <div class="spacer"></div>
-      <span class="date">12/02/2026</span>
-    </div>
-    <div class="main">
-      <img src="https://picsum.photos/1200/900" />
-    </div>
-    <div class="notes">
-      <div>*****</div>
-      <div>*****</div>
-      <div>*****</div>
-      <button>Voter</button>
-    </div>
-    <button @click="displayComments">commentaires</button>
-    <div class="comments">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    </div>
-  </div>
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            background-color: rgba(5, 173, 78, 0.774);
+            min-height: 100vh;
+        }
 
-  <div>
-    <table>
-      <tbody id="participationBody"></tbody>
-    </table>
-  </div>
+
+        header {
+            display: flex;
+            justify-content: center;
+            padding: 20px 0;
+        }
+
+        #menu {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        #menu a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+        }
+
+        #menu a:hover {
+            text-decoration: underline;
+        }
+
+        #logout {
+            background: white;
+            border: 1px solid #333;
+            border-radius: 4px;
+            padding: 4px 10px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+
+        main {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #e0e0e0;
+            vertical-align: middle;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: #f5f5f5;
+        }
+
+
+        td img {
+            max-width: 500px;
+            border-radius: 4px;
+            display: block;
+        }
+
+
+        button {
+            cursor: pointer;
+            padding: 5px 12px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            background: white;
+            font-size: 13px;
+            margin-right: 6px;
+        }
+
+        button:hover {
+            background: #f0f0f0;
+        }
+
+        .btn-vote {
+            background: #2d6a4f;
+            color: white;
+            border-color: #2d6a4f;
+        }
+
+        .btn-vote:hover {
+            background: #235c42;
+        }
+
+
+        .stars {
+            display: inline-flex;
+            gap: 4px;
+            vertical-align: middle;
+        }
+
+        .star {
+            font-size: 24px;
+            color: #ccc;
+            cursor: pointer;
+            user-select: none;
+            transition: color .1s, transform .1s;
+            line-height: 1;
+        }
+
+        .star.active {
+            color: #e8a020;
+        }
+
+        .star:hover {
+            transform: scale(1.2);
+        }
+
+        #participationBody td>br {
+            display: none;
+        }
+
+        /* on retire les <br> visuellement */
+
+        .vote-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .vote-row span.vote-label {
+            width: 90px;
+            flex-shrink: 0;
+            color: #555;
+        }
+
+        .hide {
+            display: none;
+        }
+    </style>
+
+    <header>
+        <nav id="menu">
+            <a href="index.html">Accueil |</a>
+            <a id="connexion" href="connexion_user.html">Connexion |</a>
+            <a href="challenges.html">Challenges |</a>
+            <a id="creationChallenge" href="creation_challenge.html" class="hide">Créer un challenge</a>
+            <button id="logout" hidden>Déconnexion</button>
+        </nav>
+    </header>
+
+    <main>
+        <table>
+            <tbody id="participationBody"></tbody>
+        </table>
+    </main>
+
+    <script>
+        const logout = document.getElementById("logout");
+        const connexion = document.getElementById("connexion");
+        const participationBody = document.getElementById("participationBody");
+        const menu = document.getElementById("menu");
+        const creationChallenge = document.getElementById("creationChallenge")
+
+        async function fetchJSON(url, options) {
+            const resp = await fetch(url, options);
+            return resp.json();
+        }
+
+        async function init() {
+            // Récupération de l'utilisateur connecté
+            const user = await fetchJSON("/api/users/me", { credentials: "include" });
+            if (user?.id) {
+                menu.appendChild(Object.assign(document.createElement("span"), {
+                    textContent: ` | Bonjour, ${user.firstname} ${user.name}`
+                }));
+                connexion.hidden = true;
+                logout.hidden = false;
+                if (user.is_admin === 1) {
+                    creationChallenge.classList.remove("hide");
+                } else {
+                    creationChallenge.classList.add("hide");
+                }
+            }
+
+            // Récupération des challenges actifs et de leurs participations
+            const challenges = await fetchJSON("/api/challenges/active");
+            for (const challenge of challenges) {
+                const participations = await fetchJSON(`/api/challenges/${challenge.id}/participations`);
+                for (const p of participations) {
+                    renderParticipation(p, user);
+                }
+            }
+        }
+
+        function createStars(container, name) {
+            const row = document.createElement("div");
+            row.className = "vote-row";
+
+            const label = document.createElement("span");
+            label.className = "vote-label";
+            label.textContent = name + " :";
+            row.appendChild(label);
+
+            const wrap = document.createElement("div");
+            wrap.className = "stars";
+            let selected = 0;
+
+            for (let i = 1; i <= 5; i++) {
+                const s = document.createElement("span");
+                s.className = "star";
+                s.textContent = "★";
+                s.dataset.value = i;
+
+                s.addEventListener("mouseenter", () =>
+                    [...wrap.children].forEach(st => st.classList.toggle("active", st.dataset.value <= i))
+                );
+                s.addEventListener("mouseleave", () =>
+                    [...wrap.children].forEach(st => st.classList.toggle("active", st.dataset.value <= selected))
+                );
+                s.addEventListener("click", () => {
+                    selected = i;
+                    [...wrap.children].forEach(st => st.classList.toggle("active", st.dataset.value <= selected));
+                });
+
+                wrap.appendChild(s);
+            }
+
+            wrap._getValue = () => selected;
+            row.appendChild(wrap);
+            container.appendChild(row);
+            return wrap;
+        }
+        function renderParticipation(p, user) {
+            // Ligne principale
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+        <td>${p.created}</td>
+        <td>${p.name} ${p.firstname}</td>
+        <td><img src="/upload/${p.url}" style="max-width:200px"></td>
+        <td>
+          <button class="btn-comments">Afficher commentaires</button>
+          <button class="btn-vote">Voter</button>
+        </td>
+      `;
+            participationBody.appendChild(tr);
+
+            // Ligne commentaires (masquée par défaut)
+            const trComments = document.createElement("tr");
+            trComments.hidden = true;
+            const tdComments = document.createElement("td");
+            tdComments.colSpan = 4;
+            trComments.appendChild(tdComments);
+            participationBody.appendChild(trComments);
+
+            // Ligne votes (masquée par défaut)
+            const trVotes = document.createElement("tr");
+            trVotes.hidden = true;
+            const tdVotes = document.createElement("td");
+            tdVotes.colSpan = 4;
+            trVotes.appendChild(tdVotes);
+            participationBody.appendChild(trVotes);
+
+            // Bouton commentaires
+            tr.querySelector(".btn-comments").addEventListener("click", async (e) => {
+                const btn = e.target;
+                if (!trComments.hidden) {
+                    trComments.hidden = true;
+                    btn.textContent = "Afficher commentaires";
+                    return;
+                }
+
+                tdComments.textContent = "Chargement...";
+                trComments.hidden = false;
+                btn.textContent = "Masquer commentaires";
+
+                const comments = await fetchJSON(`/api/comments/participations/${p.participation_id}`);
+                tdComments.innerHTML = "";
+                if (comments.length === 0) {
+                    tdComments.textContent = "Aucun commentaire.";
+                } else {
+                    comments.forEach(c => {
+                        tdComments.appendChild(Object.assign(document.createElement("p"), { textContent: c.content }));
+                    });
+                }
+                const input = document.createElement("input");
+                input.type = "text";
+                input.placeholder = "Écrire un commentaire...";
+                input.style.cssText = "padding:6px 10px; border:1px solid #ccc; border-radius:4px; font-size:13px; width:300px; margin-top:8px;";
+
+                const btnComment = document.createElement("button");
+                btnComment.textContent = "Envoyer";
+                btnComment.style.cssText = "background:#2d6a4f; color:white; border-color:#2d6a4f;";
+
+                const form = document.createElement("div");
+                form.style.cssText = "display:flex; gap:8px; margin-top:8px;";
+                form.appendChild(input);
+                form.appendChild(btnComment);
+                tdComments.appendChild(form);
+
+                btnComment.addEventListener("click", async () => {
+                    if (!input.value.trim()) return;
+
+                    const data = await fetchJSON("/api/comments", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        credentials: "include",
+                        body: JSON.stringify({
+                            content: input.value.trim(),
+                            participation_id: p.participation_id,
+                            user_id: user.id
+                        })
+                    });
+
+                    if (data.succes) {
+                        const p_elem = document.createElement("p");
+                        p_elem.textContent = input.value.trim();
+                        tdComments.insertBefore(p_elem, form);
+                        input.value = "";
+                    } else {
+                        alert("Erreur lors de l'envoi du commentaire.");
+                    }
+                });
+            });
+
+            // Bouton vote
+            tr.querySelector(".btn-vote").addEventListener("click", () => {
+                if (!trVotes.hidden) {
+                    trVotes.hidden = true;
+                    return;
+                }
+
+                tdVotes.innerHTML = "";
+                const starsCreative = createStars(tdVotes, "Créativité");
+                const starsTechnical = createStars(tdVotes, "Technique");
+                const starsTheme = createStars(tdVotes, "Thème");
+
+                const btnSend = document.createElement("button");
+                btnSend.textContent = "Envoyer";
+                tdVotes.appendChild(btnSend);
+
+                btnSend.addEventListener("click", async () => {
+                    const body = {
+                        creative_note: starsCreative._getValue(),
+                        technical_note: starsTechnical._getValue(),
+                        theme_note: starsTheme._getValue(),
+                        user_id: user.id,
+                        participation_id: p.participation_id
+                    };
+
+                    const data = await fetchJSON("/api/votes", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(body),
+                        credentials: "include"
+                    });
+
+                    if (data.succes) {
+                        window.location.href = "/index.html";
+                    } else {
+                        alert("La notation n'a pas été prise en compte.");
+                    }
+                });
+
+                trVotes.hidden = false;
+            });
+        }
+        logout.addEventListener("click", async () => {
+            await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
+            window.location.reload();
+        });
+
+        init();
+    </script>
+
 </body>
-
-<template id="comment">
-  <div>
-    <input type="text">
-  </div>
-</template>
-
-<script>
-  const logout = document.getElementById("logout");
-  const connexion = document.getElementById("connexion");
-  const participationBody = document.getElementById("participationBody");
-  const menu = document.getElementById("menu");
-
-  async function active_challenge() {
-    const resp = await fetch("/api/challenges/active");
-    const challenges = await resp.json();
-    return challenges;
-  }
-
-  async function participationByChallengeId(id) {
-    const resp = await fetch("/api/challenges/" + id + "/participations");
-    const data = await resp.json();
-    return data;
-  }
-
-  async function userActive() {
-    const resp = await fetch("/api/users/me", { credentials: "include" });
-    const data = await resp.json();
-    return data;
-  }
-
-  function useTeplate(id) {
-    const template = document.querySelector(`#${id}`);
-    return document.importNode(template.content, true);
-  }
-
-  async function init() {
-
-    const user = await userActive();
-    console.log(user);
-    if (user && user.id) {
-      const span = document.createElement("span");
-      span.textContent = "Bonjour, " + user.firstname + " " + user.name;
-      menu.appendChild(span);
-      connexion.classList.add("hide");
-      logout.classList.remove("hide");
-    }
-
-    const challenges = await active_challenge();
-    console.log(challenges);
-
-    for (let challenge of challenges) {
-      const participations = await participationByChallengeId(challenge.id);
-
-      for (let participation of participations) {
-        const tr = document.createElement("tr");
-
-        const tdDate = document.createElement("td")
-        tdDate.textContent = participation.created;
-        tr.appendChild(tdDate);
-
-        const tdName = document.createElement("td")
-        tdName.textContent = participation.name + " " + participation.firstname;
-        tr.appendChild(tdName);
-
-        const tdImg = document.createElement("td")
-        const img = document.createElement("img")
-        img.src = "/upload/" + participation.url;
-        tdImg.appendChild(img);
-        tr.appendChild(tdImg);
-
-        const tdbutton = document.createElement("td")
-
-        const btnComment = document.createElement("button")
-        btnComment.textContent = ("Afficher les post")
-
-        const btnvote = document.createElement("button")
-        btnvote.textContent = ("Voter")
-
-        tdbutton.appendChild(btnComment)
-        tdbutton.appendChild(btnvote)
-        tr.appendChild(tdbutton)
-
-        participationBody.appendChild(tr)
-
-        const trComments = document.createElement("tr");
-        trComments.classList.add("hide");
-
-        const tdComments = document.createElement("td");
-        tdComments.colSpan = 4;
-        trComments.appendChild(tdComments);
-
-        const trVotes = document.createElement("tr");
-        trVotes.classList.add("hide");
-
-        const tdVotes = document.createElement("td");
-        trVotes.appendChild(tdVotes);
-
-        participationBody.appendChild(trComments);
-
-        btnComment.addEventListener("click", async () => {
-          if (!trComments.classList.contains("hide")) {
-            trComments.classList.add("hide");
-            btnComment.textContent = "Afficher commentaires";
-            return;
-          }
-
-
-          tdComments.innerHTML = "Chargement";
-
-          const resp = await fetch("/api/comments/participations/" + participation.participation_id);
-          const comments = await resp.json();
-          tdComments.innerHTML = "";
-
-          if (comments.length === 0) {
-            tdComments.textContent = "Aucun commentaire";
-          } else {
-            for (let comment of comments) {
-              const p = document.createElement("p");
-              p.textContent = comment.content;
-              tdComments.appendChild(p);
-            }
-          }
-          trComments.classList.remove("hide");
-          tr.appendChild(trComments);
-          btnComment.textContent = "Masquer commentaires";
-        })
-
-        btnvote.addEventListener("click", async () => {
-          if (!trVotes.classList.contains("hide")) {
-            trVotes.classList.add("hide");
-            return;
-          }
-
-          if (trVotes.childElementCount > 4) {
-            trvotes.classList.remove("hide");
-          }
-
-          trVotes.classList.remove("hide");
-
-          const creativeNote = document.createElement("input");
-          creativeNote.type = "number";
-          creativeNote.placeholder = "Note créativité";
-
-          const technicalNote = document.createElement("input");
-          technicalNote.type = "number";
-          technicalNote.placeholder = "Note technique";
-
-          const themeNote = document.createElement("input");
-          themeNote.type = "number";
-          themeNote.placeholder = "Respect du thème";
-
-          const btnSendVotes = document.createElement("button");
-          btnSendVotes.textContent = "Envoyer les votes";
-
-
-          trVotes.append(creativeNote, technicalNote, themeNote, btnSendVotes);
-          tr.appendChild(trVotes);
-
-          btnSendVotes.addEventListener("click", async () => {
-            const request = {
-              creative_note: creativeNote.value,
-              technical_note: technicalNote.value,
-              theme_note: themeNote.value,
-              user_id: user.id,
-              participation_id: participation.participation_id
-            }
-
-            const response = await fetch("/api/votes", {
-              method: "POST",
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(request),
-              credentials: "include"
-            })
-
-            const data = await response.json();
-
-
-            if (data.succes) {
-              window.location.href = "/index.html"
-            } else {
-              alert("La notation n'a pas été prix en compte");
-            }
-          });
-        })
-
-      };
-
-    }
-  }
-
-
-  init();
-
-  logout.addEventListener("click", async () => {
-    await fetch("/api/auth/logout", {
-      method: "POST",
-      credentials: "include"
-    });
-
-    window.location.reload();
-  });
-</script>
 
 </html>

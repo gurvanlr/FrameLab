@@ -1,68 +1,109 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
 </head>
 
 <style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  color: #333;
-  background-color: rgba(5, 173, 78, 0.774);
-}
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-header {
+  body {
+    font-family: Arial, sans-serif;
+    color: #333;
+    background-color: rgba(5, 173, 78, 0.774);
+    min-height: 100vh;
+  }
 
+  
+  header {
+    display: flex;
+    justify-content: center;
+    padding: 20px 0;
+  }
 
-  display: flex;
-  justify-content: center;
-  padding: 20px 0;
-}
+  .menu {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
 
+  .menu a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+  }
 
-.menu {
-  display: flex;
-  gap: 20px;
-}
+  .menu a:hover { text-decoration: underline; }
 
-.menu a {
-  text-decoration: none;
-  color: #333;
-  font-weight: bold;
-}
+  
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: white;
+    padding: 32px;
+    border-radius: 8px;
+    width: 400px;
+    margin: 30px auto 0;
+  }
 
-div {
-  display: flex;
-  justify-content: center;
-  padding-top: 30px;
-}
+  input[type="text"],
+  input[type="date"] {
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: Arial, sans-serif;
+  }
 
-.hide {
-  display: none;
-}
+  input[type="text"]:focus,
+  input[type="date"]:focus {
+    outline: none;
+    border-color: #2d6a4f;
+  }
+
+  input[type="file"] {
+    font-size: 13px;
+    color: #666;
+  }
+
+  button[type="submit"] {
+    padding: 10px;
+    background: #2d6a4f;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  button[type="submit"]:hover { background: #235c42; }
+
+  
+  .hide { display: none; }
 </style>
 
 <header>
   <nav class="menu" id="menu">
-    <a href="index.html">Accueil</a>
-    <a href="connexion_user.html" id="connexion">Connexion</a>
-    <a href="challenges.html">challenges</a>
-    <a href="creation_challenge.html">création des challenges</a>
+    <a href="index.html">Accueil</a> |
+    <a href="connexion_user.html" id="connexion">Connexion</a> |
+    <a href="challenges.html">Challenges</a> |
   </nav>
 </header>
 
 <body>
-    <form id="form" method="post" enctype="multipart/form-data">
-  <input type="text" name="title" placeholder="Titre du challenge">
-  <input type="text" name="description" placeholder="Description">
-  <input type="date" name="date_start">
-  <input type="date" name="date_end">
-  <input type="file" name="uploaded_file"> 
-  <button type="submit">Créer Challenge</button>
-</form>
+  <form id="form" method="post" enctype="multipart/form-data">
+    <input type="text" name="title" placeholder="Titre du challenge">
+    <input type="text" name="description" placeholder="Description">
+    <input type="date" name="date_start">
+    <input type="date" name="date_end">
+    <input type="file" name="uploaded_file">
+    <button type="submit">Créer Challenge</button>
+  </form>
 </body>
 
 <script>
@@ -73,23 +114,23 @@ div {
     e.preventDefault();
     const formData = new FormData(form);
 
-    const response = await fetch ("/api/challenges", {
-    method: "POST",
-    body:formData,
-    credentials: "include"
-  })
+    const response = await fetch("/api/challenges", {
+      method: "POST",
+      body: formData,
+      credentials: "include"
+    })
 
-  const data = await response.json();
+    const data = await response.json();
 
-  if (data.succes) {
-    window.location.href = "/challenges.html"
-  }else{
-    alert("Erreur à la création du challenge");
-  };
-});
+    if (data.succes) {
+      window.location.href = "/challenges.html"
+    } else {
+      alert("Erreur à la création du challenge");
+    };
+  });
 
-async function userActive() {
-    const resp = await fetch ("/api/users/me", {credentials : "include"});
+  async function userActive() {
+    const resp = await fetch("/api/users/me", { credentials: "include" });
     const data = await resp.json();
     return data;
   }

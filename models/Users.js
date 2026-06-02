@@ -6,9 +6,9 @@ export async function getUsers() {
 }
 
 export async function postUser(mail,password,name,firstname) {
-    const rows = await db.insert("INSERT INTO users (mail,password,name,firstname,is_admin,registrated,validated) VALUES (?,?,?,?,0,NOW(),0)",
+    const insertedId = await db.insert("INSERT INTO users (mail,password,name,firstname,is_admin,registrated,validated) VALUES (?,?,?,?,0,NOW(),0)",
         [mail,password,name,firstname]);
-    return rows;   
+    return insertedId;   
 }
 
 export async function getUser(id) {

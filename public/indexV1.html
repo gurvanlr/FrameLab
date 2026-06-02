@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    color: #333;
+    background-color: rgba(5, 173, 78, 0.774);
+  }
+
+  header {
+    display: flex;
+    justify-content: center;
+    padding: 20px 0;
+  }
+
+
+  .menu {
+    display: flex;
+    gap: 20px;
+  }
+
+  .menu a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+  }
+
+  /*div {
+    display: flex;
+    justify-content: center;
+    padding-top: 30px;
+  }*/
+
+  .hide {
+    display: none;
+  }
+
+  .spacer {
+    flex-grow: 1;
+  }
+
+  .participation {
+    display: block;
+    position: relative;
+    max-width: 900px;
+    padding: 24px;
+    background: gray;
+    border-radius: 5px;
+    margin: auto;
+
+    .header {
+      display: flex;
+      font-size: .8em;
+      color: #333;
+
+      .title, .username {
+        font-size: 1.5em;
+        color: black;
+      }
+    }
+
+    .main {
+      padding-top: 24px;
+      margin: auto;
+      width: max-content;
+      width:100%;
+
+      img {
+        max-width: 100%;
+      }
+    }
+  }
+</style>
+
+<header id="header">
+  <nav class="menu" id="menu">
+    <a href="index.html">Accueil</a>
+    <a id="connexion" href="connexion_user.html">Connexion</a>
+    <a href="challenges.html">challenges</a>
+    <a href="creation_challenge.html">création des challenges</a>
+    <a href="indexV2.html">test index</a>
+    <button id="logout" class="hide">Déconnexion</button>
+  </nav>
+</header>
+
+<body>
+
+  <div id="participation_2" class="participation">
+    <div class="header">
+      <span class="title">Ma super partoche</span>
+      &nbsp;by&nbsp;
+      <span class="username">Roger</span>
+      <div class="spacer"></div>
+      <span class="date">12/02/2026</span>
+    </div>
+    <div class="main">
+      <img src="https://picsum.photos/1200/900" />
+    </div>
+    <div class="notes">
+      <div>*****</div>
+      <div>*****</div>
+      <div>*****</div>
+      <button>Voter</button>
+    </div>
+    <button @click="displayComments">commentaires</button>
+    <div class="comments">
+
+    </div>
+  </div>
+
+  <div>
+    <table>
+      <tbody id="participationBody"></tbody>
+    </table>
+  </div>
+</body>
+
+<template id="comment">
+  <div>
+    <input type="text">
+  </div>
+</template>
+
+<script>
+  const logout = document.getElementById("logout");
+  const connexion = document.getElementById("connexion");
+  const participationBody = document.getElementById("participationBody");
+  const menu = document.getElementById("menu");
+
+  async function active_challenge() {
+    const resp = await fetch("/api/challenges/active");
+    const challenges = await resp.json();
+    return challenges;
+  }
+
+  async function participationByChallengeId(id) {
+    const resp = await fetch("/api/challenges/" + id + "/participations");
+    const data = await resp.json();
+    return data;
+  }
+
+  async function userActive() {
+    const resp = await fetch("/api/users/me", { credentials: "include" });
+    const data = await resp.json();
+    return data;
+  }
+
+  function useTeplate(id) {
+    const template = document.querySelector(`#${id}`);
+    return document.importNode(template.content, true);
+  }
+
+  async function init() {
+
+    const user = await userActive();
+    console.log(user);
+    if (user && user.id) {
+      const span = document.createElement("span");
+      span.textContent = "Bonjour, " + user.firstname + " " + user.name;
+      menu.appendChild(span);
+      connexion.classList.add("hide");
+      logout.classList.remove("hide");
+    }
+
+    const challenges = await active_challenge();
+    console.log(challenges);
+
+    for (let challenge of challenges) {
+      const participations = await participationByChallengeId(challenge.id);
+
+      for (let participation of participations) {
+        const tr = document.createElement("tr");
+
+        const tdDate = document.createElement("td")
+        tdDate.textContent = participation.created;
+        tr.appendChild(tdDate);
+
+        const tdName = document.createElement("td")
+        tdName.textContent = participation.name + " " + participation.firstname;
+        tr.appendChild(tdName);
+
+        const tdImg = document.createElement("td")
+        const img = document.createElement("img")
+        img.src = "/upload/" + participation.url;
+        tdImg.appendChild(img);
+        tr.appendChild(tdImg);
+
+        const tdbutton = document.createElement("td")
+
+        const btnComment = document.createElement("button")
+        btnComment.textContent = ("Afficher les post")
+
+        const btnvote = document.createElement("button")
+        btnvote.textContent = ("Voter")
+
+        tdbutton.appendChild(btnComment)
+        tdbutton.appendChild(btnvote)
+        tr.appendChild(tdbutton)
+
+        participationBody.appendChild(tr)
+
+        const trComments = document.createElement("tr");
+        trComments.classList.add("hide");
+
+        const tdComments = document.createElement("td");
+        tdComments.colSpan = 4;
+        trComments.appendChild(tdComments);
+
+        const trVotes = document.createElement("tr");
+        trVotes.classList.add("hide");
+
+        const tdVotes = document.createElement("td");
+        trVotes.appendChild(tdVotes);
+
+        participationBody.appendChild(trComments);
+
+        btnComment.addEventListener("click", async () => {
+          if (!trComments.classList.contains("hide")) {
+            trComments.classList.add("hide");
+            btnComment.textContent = "Afficher commentaires";
+            return;
+          }
+
+
+          tdComments.innerHTML = "Chargement";
+
+          const resp = await fetch("/api/comments/participations/" + participation.participation_id);
+          const comments = await resp.json();
+          tdComments.innerHTML = "";
+
+          if (comments.length === 0) {
+            tdComments.textContent = "Aucun commentaire";
+          } else {
+            for (let comment of comments) {
+              const p = document.createElement("p");
+              p.textContent = comment.content;
+              tdComments.appendChild(p);
+            }
+          }
+          trComments.classList.remove("hide");
+          tr.appendChild(trComments);
+          btnComment.textContent = "Masquer commentaires";
+        })
+
+        btnvote.addEventListener("click", async () => {
+          if (!trVotes.classList.contains("hide")) {
+            trVotes.classList.add("hide");
+            return;
+          }
+
+          if (trVotes.childElementCount > 4) {
+            trvotes.classList.remove("hide");
+          }
+
+          trVotes.classList.remove("hide");
+
+          const creativeNote = document.createElement("input");
+          creativeNote.type = "number";
+          creativeNote.placeholder = "Note créativité";
+
+          const technicalNote = document.createElement("input");
+          technicalNote.type = "number";
+          technicalNote.placeholder = "Note technique";
+
+          const themeNote = document.createElement("input");
+          themeNote.type = "number";
+          themeNote.placeholder = "Respect du thème";
+
+          const btnSendVotes = document.createElement("button");
+          btnSendVotes.textContent = "Envoyer les votes";
+
+
+          trVotes.append(creativeNote, technicalNote, themeNote, btnSendVotes);
+          tr.appendChild(trVotes);
+
+          btnSendVotes.addEventListener("click", async () => {
+            const request = {
+              creative_note: creativeNote.value,
+              technical_note: technicalNote.value,
+              theme_note: themeNote.value,
+              user_id: user.id,
+              participation_id: participation.participation_id
+            }
+
+            const response = await fetch("/api/votes", {
+              method: "POST",
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(request),
+              credentials: "include"
+            })
+
+            const data = await response.json();
+
+
+            if (data.succes) {
+              window.location.href = "/index.html"
+            } else {
+              alert("La notation n'a pas été prix en compte");
+            }
+          });
+        })
+
+      };
+
+    }
+  }
+
+
+  init();
+
+  logout.addEventListener("click", async () => {
+    await fetch("/api/auth/logout", {
+      method: "POST",
+      credentials: "include"
+    });
+
+    window.location.reload();
+  });
+</script>
+
+</html>

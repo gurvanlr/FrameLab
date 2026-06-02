@@ -2,7 +2,8 @@ import {postcomment,getcomments,getCommentByID, getCommentByParticipation_id} fr
 
 export async function postComment(request,response) {
     const comment = await postcomment(request.body.content,request.body.user_id,request.body.participation_id);
-    response.json(comment);
+    
+    response.json({succes : true});
 }
 
 export async function rechercheComment(request,response) {

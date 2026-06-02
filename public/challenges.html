@@ -1,72 +1,82 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Challenges</title>
 </head>
-
 <style>
-body {
-  display: block;
-  font-family: Arial, sans-serif;
-  color: #333;
-  background-color: rgba(5, 173, 78, 0.774);
-}
-
-header {
-  display: flex;
-  justify-content: center;
-  padding: 20px 0;
-  width: 100%;
-}
-
-.menu {
-  display: flex;
-  gap: 20px;
-}
-
-.menu a {
-  text-decoration: none;
-  color: #333;
-  font-weight: bold;
-}
-
-div {
-  display: flex;
-  justify-content: center;
-  padding-top: 30px;
-}
-
-.image {
-  height: 1200px;
-  width: 800px;
-}
-
-.button {
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: Arial, sans-serif;
+    color: #333;
+    background-color: rgba(5, 173, 78, 0.774);
+    min-height: 100vh;
+  }
+  header {
     display: flex;
-  justify-content: center;
-  padding: 20px 0;
-  text-decoration: none;
-  color: #333;
-  font-weight: bold;
-}
-
-.hide {
-  display: none;
-}
-
+    justify-content: center;
+    padding: 20px 0;
+    width: 100%;
+  }
+  .menu {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+  .menu a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+  }
+  .menu a:hover { text-decoration: underline; }
+  div {
+    display: flex;
+    justify-content: center;
+    padding-top: 30px;
+  }
+  table {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    border-collapse: collapse;
+  }
+  td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #e0e0e0;
+    vertical-align: middle;
+    font-size: 14px;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #f5f5f5; }
+  td img {
+    width: 200px;
+    height: auto;
+    display: block;
+    border-radius: 4px;
+  }
+  .btn-participations {
+    padding: 7px 14px;
+    background: #2d6a4f;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-participations:hover { background: #235c42; }
+  .hide { display: none; }
 </style>
-
 <header>
   <nav class="menu" id="menu">
-    <a href="index.html">Accueil</a>
-    <a href="connexion_user.html" id="connexion">Connexion</a>
-    <a href="challenges.html">challenges</a>
-    <a href="creation_challenge.html">création des challenges</a>
+    <a href="index.html">Accueil</a> |
+    <a href="connexion_user.html" id="connexion">Connexion</a> |
+    <a href="challenges.html">Challenges</a> |
   </nav>
 </header>
-
 <body>
   <div>
     <table>
@@ -74,69 +84,62 @@ div {
     </table>
   </div>
 </body>
-
 <script>
-const menu = document.getElementById("menu");
-const challengeBody = document.getElementById("challengeBody");
+  const menu = document.getElementById("menu");
+  const challengeBody = document.getElementById("challengeBody");
 
-    async function fetchchallenges() {
-        const resp = await fetch ("/api/challenges");
-        const data = await resp.json();
-        return data;
-    }
-
-    async function userActive() {
-    const resp = await fetch ("/api/users/me", {credentials : "include"});
-    const data = await resp.json();
-    return data;
+  async function fetchJSON(url, opts) {
+    const resp = await fetch(url, opts);
+    return resp.json();
   }
 
-    async function init() {
-
-      const user = await userActive();
-    console.log(user);
-    if (user && user.id) {
-      const span = document.createElement("span");
-      span.textContent = "Bonjour, " + user.firstname + " " + user.name;
-      menu.appendChild(span);
-      connexion.classList.add("hide");
+  async function init() {
+    const user = await fetchJSON("/api/users/me", { credentials: "include" });
+    if (user?.id) {
+      menu.appendChild(Object.assign(document.createElement("span"), {
+        textContent: `Bonjour, ${user.firstname} ${user.name}`
+      }));
+      document.getElementById("connexion").classList.add("hide");
     }
 
+    const challenges = await fetchJSON("/api/challenges");
+    for (const challenge of challenges) {
+      const tr = document.createElement("tr");
 
-        const challenges = await fetchchallenges();
+      const tdTitle = document.createElement("td");
+      tdTitle.textContent = challenge.title;
+      tr.appendChild(tdTitle);
 
-        for (let challenge of challenges){
-            const tr = document.createElement("tr");
+      const tdDesc = document.createElement("td");
+      tdDesc.textContent = challenge.description;
+      tr.appendChild(tdDesc);
 
+      const tdImg = document.createElement("td");
+      const img = document.createElement("img");
+      img.src = challenge.url;
+      tdImg.appendChild(img);
+      tr.appendChild(tdImg);
 
-            const td_title =document.createElement("td");
-            td_title.textContent = challenge.title;
-            tr.appendChild(td_title);
+      const tdStart = document.createElement("td");
+      tdStart.textContent = challenge.date_start;
+      tr.appendChild(tdStart);
 
-            const td_description = document.createElement ("td");
-            td_description.textContent = challenge.description;
-            tr.appendChild(td_description);
+      const tdEnd = document.createElement("td");
+      tdEnd.textContent = challenge.date_end;
+      tr.appendChild(tdEnd);
 
-            const td_img = document.createElement ("td");
-            const img = document.createElement("img");
-            img.src = challenge.url
-            td_img.appendChild(img);
-            tr.appendChild(td_img);
+      const tdBtn = document.createElement("td");
+      const btn = document.createElement("a");
+      btn.className = "btn-participations";
+      btn.textContent = "Voir les participations";
+      btn.href = `participations.html?challenge_id=${challenge.id}`;
+      tdBtn.appendChild(btn);
+      tr.appendChild(tdBtn);
 
-
-            const td_dateStart =  document.createElement("td");
-            td_dateStart.textContent = challenge.date_start;
-            tr.appendChild(td_dateStart);
-
-
-            const td_dateEnd = document.createElement("td");
-            td_dateEnd.textContent = challenge.date_end;
-            tr.appendChild(td_dateEnd);
-
-            challengeBody.appendChild(tr)
-        }
+      challengeBody.appendChild(tr);
     }
+  }
 
-    init();
-
+  init();
 </script>
+</html>

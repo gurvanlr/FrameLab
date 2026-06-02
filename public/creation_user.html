@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,103 +8,159 @@
 </head>
 
 <style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  color: #333;
-  background-color: rgba(5, 173, 78, 0.774);
-}
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-header {
-  display: flex;
-  justify-content: center;
-  padding: 20px 0;
-}
+  body {
+    font-family: Arial, sans-serif;
+    color: #333;
+    background-color: rgba(5, 173, 78, 0.774);
+    min-height: 100vh;
+  }
 
-.menu {
-  display: flex;
-  gap: 20px;
-}
+  
+  header {
+    display: flex;
+    justify-content: center;
+    padding: 20px 0;
+  }
 
-.menu a {
-  text-decoration: none;
-  color: #333;
-  font-weight: bold;
-}
+  .menu {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
 
-div {
-  display: flex;
-  justify-content: center;
-  padding-top: 30px;
-}
+  .menu a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+  }
 
-.hide {
-  display: none;
-}
+  .menu a:hover { text-decoration: underline; }
+
+  
+  form {
+    background: white;
+    padding: 32px;
+    border-radius: 8px;
+    width: 320px;
+    margin: 30px auto 0;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  input {
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: Arial, sans-serif;
+  }
+
+  input:focus {
+    outline: none;
+    border-color: #2d6a4f;
+  }
+
+  button[type="submit"] {
+    padding: 10px;
+    background: #2d6a4f;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+  }
+
+  button[type="submit"]:hover { background: #235c42; }
+
+  
+  #validationLink {
+    display: block;
+    text-align: center;
+    margin-top: 16px;
+    font-size: 14px;
+  }
+
+  #validationLink a {
+    color: #2d6a4f;
+    font-weight: bold;
+  }
+
+  
+  .hide { display: none; }
 </style>
 
 <header>
   <nav class="menu" id="menu">
-    <a href="index.html">Accueil</a>
-    <a href="connexion_user.html" id="connexion">Connexion</a>
-    <a href="challenges.html">challenges</a>
-    <a href="creation_challenge.html">création des challenges</a>
+    <a href="index.html">Accueil</a> |
+    <a href="connexion_user.html" id="connexion">Connexion</a> |
+    <a href="challenges.html">Challenges</a> |
   </nav>
 </header>
 
 <body>
   <form id="registerform">
-  <div class="form-group">
-    <input type="mail" class="form-control" placeholder="écrit un mail" name="mail">
-    <input type="password" class="form-control" placeholder="écrit un mot de passe" name="password">
-    <input type="text" class="form-control" placeholder="écrit un nom" name="name">
-    <input type="text" class="form-control" placeholder="écrit un prénom" name="firstname">
-    <button type="submit" placeholder="Créer">Créer</button>
-  </div>
+    <div class="form-group">
+      <input type="mail" class="form-control" placeholder="écrit un mail" name="mail">
+      <input type="password" class="form-control" placeholder="écrit un mot de passe" name="password">
+      <input type="text" class="form-control" placeholder="écrit un nom" name="name">
+      <input type="text" class="form-control" placeholder="écrit un prénom" name="firstname">
+      <button type="submit" placehold er="Créer">Créer</button>
+    </div>
+  </form>
   <div id="validationLink"></div>
-</form>
 
 </body>
+
 </html>
 
 <script>
   const menu = document.getElementById("menu");
   const form = document.getElementById("registerform");
-  const validationLink = document.getElementById("validationLink")
+  const validation = document.getElementById("validationLink")
 
-  form.addEventListener("submit", async (e) => {e.preventDefault()
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault()
 
     const formData = {
-    mail: form.mail.value,
-    password: form.password.value,
-    name: form.name.value,
-    firstname: form.firstname.value
-  };
+      mail: form.mail.value,
+      password: form.password.value,
+      name: form.name.value,
+      firstname: form.firstname.value
+    };
 
-  const response = await fetch ("/api/users", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(formData),
-    credentials: "include"
-  })
+    const response = await fetch("/api/users", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(formData),
+      credentials: "include"
+    })
 
-  const data = await response.json();
-  
-  if (data.success) {
-    validationLink.textContent = "merci d'appuyer sur ce lien pour valider le compte";
-    const link = document.createElement("a");
-    link.textContent = "validation";
-    link.href = "validation.html";
-    validationLink.appendChild(link);
-  }else{
-    alert("Email déjà utilisé");
-  }
+    const data = await response.json();
+    console.log(data);
+
+    if (data.success) {
+      validation.textContent = "merci d'appuyer sur ce lien pour valider le compte : ";
+      const link = document.createElement("a");
+      link.textContent = "validation";
+      link.href = "/validation.html?validation_token="+data.token;
+      validation.appendChild(link);
+    } else {
+      alert("Email déjà utilisé");
+    }
   });
 
   async function userActive() {
-    const resp = await fetch ("/api/users/me", {credentials : "include"});
+    const resp = await fetch("/api/users/me", { credentials: "include" });
     const data = await resp.json();
     return data;
   }

@@ -1,10 +1,11 @@
 import Database from "mysql2-async";
 
 const db = new Database({
-    host: "127.0.0.1",
-    user: "root",
-    password: "22730/GAla/22",
-    database: "framelab_test",
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME,
+    port: process.env.DB_PORT,
     skiptzfix: true,
     dateStrings: true,
 });

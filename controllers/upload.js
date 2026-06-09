@@ -12,6 +12,7 @@ const storage = multer.diskStorage({
 
 function fileFilter (req, file, cb) {
     if (file.mimetype.startsWith("image/")){
+        req.body.participation_url = file.filename;
         cb(null, true);
     } else {
         cb(new Error('bad type of file'));
@@ -28,3 +29,5 @@ export const upload = multer({
         fileSize: 10_000_000
     }
  })
+
+ 

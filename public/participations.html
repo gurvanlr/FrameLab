@@ -1,139 +1,29 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles/base.css">
+  <script src="scripts/app.js"></script>
   <title>Participations</title>
 </head>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: Arial, sans-serif;
-    color: #333;
-    background-color: rgba(5, 173, 78, 0.774);
-    min-height: 100vh;
-  }
-  header {
-    display: flex;
-    justify-content: center;
-    padding: 20px 0;
-    width: 100%;
-  }
-  .menu {
-    display: flex;
-    gap: 20px;
-    align-items: center;
-  }
-  .menu a {
-    text-decoration: none;
-    color: #333;
-    font-weight: bold;
-  }
-  .menu a:hover { text-decoration: underline; }
-  div {
-    display: flex;
-    justify-content: center;
-    padding-top: 30px;
-  }
-  h2 {
-    text-align: center;
-    margin-top: 24px;
-    font-size: 20px;
-    color: white;
-  }
-  table {
-    background: white;
-    border-radius: 8px;
-    overflow: hidden;
-    border-collapse: collapse;
-  }
-  td {
-    padding: 12px 16px;
-    border-bottom: 1px solid #e0e0e0;
-    vertical-align: middle;
-    font-size: 14px;
-  }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: #f5f5f5; }
-  td img {
-    width: 200px;
-    height: auto;
-    display: block;
-    border-radius: 4px;
-  }
 
-  
-  .stars {
-    display: inline-flex;
-    gap: 4px;
-    vertical-align: middle;
-  }
-  .star {
-    font-size: 22px;
-    color: #ccc;
-    cursor: pointer;
-    user-select: none;
-    transition: color .1s, transform .1s;
-    line-height: 1;
-  }
-  .star.active { color: #e8a020; }
-  .star:hover { transform: scale(1.2); }
-  .vote-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 8px;
-    font-size: 14px;
-  }
-  .vote-label {
-    width: 90px;
-    flex-shrink: 0;
-    color: #555;
-  }
 
-  
-  button {
-    padding: 6px 12px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background: white;
-    font-size: 13px;
-    font-weight: bold;
-    cursor: pointer;
-    margin-right: 6px;
-  }
-  button:hover { background: #f0f0f0; }
-  .btn-send-vote {
-    background: #2d6a4f;
-    color: white;
-    border-color: #2d6a4f;
-    margin-top: 8px;
-  }
-  .btn-send-vote:hover { background: #235c42; }
-
-  .hide { display: none; }
-</style>
-<header>
-  <nav class="menu" id="menu">
-    <a href="index.html">Accueil</a> |
-    <a href="connexion_user.html" id="connexion">Connexion</a> |
-    <a href="challenges.html">Challenges</a> |
-  </nav>
-</header>
 <body>
+  <script>includes('_header.html')</script>
+
   <h2 id="challenge-title">Participations</h2>
-  <div>
+  <div class="center">
     <table>
       <tbody id="participationBody"></tbody>
     </table>
   </div>
 </body>
 <script>
-  const menu = document.getElementById("menu");
   const participationBody = document.getElementById("participationBody");
   const challengeTitle = document.getElementById("challenge-title");
 
-  
   const params = new URLSearchParams(window.location.search);
   const challengeId = params.get("challenge_id");
 
@@ -194,7 +84,7 @@
     `;
     participationBody.appendChild(tr);
 
-    
+
     const trComments = document.createElement("tr");
     trComments.hidden = true;
     const tdComments = document.createElement("td");
@@ -202,7 +92,7 @@
     trComments.appendChild(tdComments);
     participationBody.appendChild(trComments);
 
-    
+
     const trVotes = document.createElement("tr");
     trVotes.hidden = true;
     const tdVotes = document.createElement("td");
@@ -239,9 +129,9 @@
       }
 
       tdVotes.innerHTML = "";
-      const starsCreative  = createStars(tdVotes, "Créativité");
+      const starsCreative = createStars(tdVotes, "Créativité");
       const starsTechnical = createStars(tdVotes, "Technique");
-      const starsTheme     = createStars(tdVotes, "Thème");
+      const starsTheme = createStars(tdVotes, "Thème");
 
       const btnSend = document.createElement("button");
       btnSend.className = "btn-send-vote";
@@ -250,9 +140,9 @@
 
       btnSend.addEventListener("click", async () => {
         const body = {
-          creative_note:  starsCreative._getValue(),
+          creative_note: starsCreative._getValue(),
           technical_note: starsTechnical._getValue(),
-          theme_note:     starsTheme._getValue(),
+          theme_note: starsTheme._getValue(),
           user_id: user.id,
           participation_id: p.participation_id
         };
@@ -276,27 +166,21 @@
   }
 
   async function init() {
-    const user = await fetchJSON("/api/users/me", { credentials: "include" });
-    if (user?.id) {
-      menu.appendChild(Object.assign(document.createElement("span"), {
-        textContent: `Bonjour, ${user.firstname} ${user.name}`
-      }));
-      document.getElementById("connexion").classList.add("hide");
-    }
+    const user = await getUser();
 
     if (!challengeId) {
       challengeTitle.textContent = "Challenge introuvable";
       return;
     }
 
-    
+
     const challenges = await fetchJSON("/api/challenges");
     const challenge = challenges.find(c => c.id == challengeId);
     if (challenge) {
       challengeTitle.textContent = `Participations — ${challenge.title}`;
     }
 
-    
+
     const participations = await fetchJSON(`/api/challenges/${challengeId}/participations`);
     if (!participations.length) {
       participationBody.innerHTML = `<tr><td>Aucune participation pour ce challenge.</td></tr>`;
@@ -307,4 +191,5 @@
 
   init();
 </script>
+
 </html>

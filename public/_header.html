@@ -1,0 +1,52 @@
+<header>
+    <nav id="menu">
+        <a href="index.html">Accueil |</a>
+        <a href="challenges.html">Challenges |</a>
+        <a id="creationChallenge" href="creation_challenge.html" class="hide">Créer un challenge |</a>
+        <a id="connexion" href="connexion_user.html">Connexion |</a>
+        <button id="logout" hidden>Déconnexion</button>
+        <button id="themeToggle">dark</button>
+    </nav>
+</header>
+
+<script>
+    const menu = document.getElementById("menu");
+    const logout = document.getElementById("logout");
+    const themeToggle = document.getElementById("themeToggle");
+    const creationChallenge = document.getElementById("creationChallenge")
+
+    logout.addEventListener("click", async () => {
+        await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
+        window.location.reload();
+    });
+
+    async function init() {
+        const user = await getUser();
+        if (user?.id) {
+            menu.appendChild(Object.assign(document.createElement("span"), {
+                textContent: ` | Bonjour, ${user.firstname} ${user.name}`
+            }));
+            connexion.hidden = true;
+            logout.hidden = false;
+            if (user.is_admin === 1) {
+                creationChallenge.classList.remove("hide");
+            } else {
+                creationChallenge.classList.add("hide");
+            }
+        }
+    }
+    init();
+
+    //dark mode
+    const savedTheme = localStorage.getItem("theme") || "light";
+    document.documentElement.setAttribute("data-theme", savedTheme);
+    themeToggle.textContent = savedTheme === "dark" ? "light" : "dark";
+
+    themeToggle.addEventListener("click", () => {
+        const current = document.documentElement.getAttribute("data-theme");
+        const next = current === "dark" ? "light" : "dark";
+        document.documentElement.setAttribute("data-theme", next);
+        localStorage.setItem("theme", next);
+        themeToggle.textContent = next === "dark" ? "light" : "dark";
+    });
+</script>

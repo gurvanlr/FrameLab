@@ -24,7 +24,7 @@ router.get("/challenges/active", rechercheChallengeActive);
 router.get("/challenges/:id/participations",getParticipationAndUserByChallenge);
 router.get("/challenges/:title", rechercheChallengeByTitle);
 
-router.post("/participations", creationParticipation);
+router.post("/participations", upload.single("uploaded_file"), creationParticipation);
 router.get("/participations", allParticipations);
 router.get("/participations/:id", rechercheParticipationByID);
 

@@ -1,0 +1,307 @@
+/* ── Reset ── */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Thème clair / sombre ── */
+:root {
+  --bg: rgba(5, 173, 78, 0.774);
+  --surface: #ffffff;
+  --text: #333;
+  --muted: #666;
+  --border: #e0e0e0;
+  --row-hover: #f5f5f5;
+  --accent: #2d6a4f;
+  --accent-hover: #235c42;
+  --star-on: #e8a020;
+  --star-off: #ccc;
+}
+
+[data-theme="dark"] {
+  --bg: #1a2e22;
+  --surface: #1e2e24;
+  --text: #e8e6df;
+  --muted: #8a9e90;
+  --border: #2e4035;
+  --row-hover: #263d2e;
+  --accent: #3d8f6a;
+  --accent-hover: #2d7a58;
+  --star-on: #f0b429;
+  --star-off: #3a4a3e;
+}
+
+/* ── Base ── */
+body {
+  font-family: Arial, sans-serif;
+  color: var(--text);
+  background-color: var(--bg);
+  min-height: 100vh;
+}
+
+/* ── Header / Nav ── */
+header {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+  width: 100%;
+}
+
+.menu, #menu {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.menu a, #menu a {
+  text-decoration: none;
+  color: var(--text);
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.menu a:hover, #menu a:hover {
+  text-decoration: underline;
+}
+
+/* ── Bouton déconnexion ── */
+#logout {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text);
+  font-weight: bold;
+}
+
+#logout:hover { background: var(--row-hover); }
+
+/* ── Bouton thème ── */
+#theme-toggle {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--text);
+  font-weight: bold;
+}
+
+#theme-toggle:hover { background: var(--row-hover); }
+
+/* ── Contenu centré (pages avec table) ── */
+div.center {
+  display: flex;
+  justify-content: center;
+  padding-top: 30px;
+}
+
+/* ── Main (page participations) ── */
+main {
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 0 16px;
+}
+
+/* ── Titres ── */
+h2 {
+  text-align: center;
+  color: white;
+  margin: 20px 0 8px;
+  font-size: 20px;
+}
+
+.titre {
+  text-align: center;
+  color: white;
+  margin: 20px 0 8px;
+}
+
+/* ── Table ── */
+table {
+  width: 100%;
+  background: var(--surface);
+  border-radius: 8px;
+  overflow: hidden;
+  border-collapse: collapse;
+}
+
+td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+  font-size: 14px;
+  color: var(--text);
+}
+
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--row-hover); }
+
+td img {
+  width: 200px;
+  height: auto;
+  display: block;
+  border-radius: 4px;
+}
+
+/* ── Boutons génériques ── */
+button {
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 13px;
+  font-weight: bold;
+  color: var(--text);
+  margin-right: 6px;
+}
+
+button:hover { background: var(--row-hover); }
+
+/* ── Bouton vote / accent ── */
+.btn-vote, .btn-send-vote, .btn-participations, button[type="submit"] {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+.btn-vote:hover,
+.btn-send-vote:hover,
+.btn-participations:hover,
+button[type="submit"]:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+}
+
+.btn-send-vote { margin-top: 8px; }
+
+.btn-participations {
+  padding: 7px 14px;
+  text-decoration: none;
+  display: inline-block;
+}
+
+/* ── Formulaires ── */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--surface);
+  padding: 32px;
+  border-radius: 8px;
+  width: 400px;
+  margin: 30px auto 0;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="mail"],
+input[type="email"],
+input[type="date"] {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: Arial, sans-serif;
+  background: var(--surface);
+  color: var(--text);
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="mail"]:focus,
+input[type="email"]:focus,
+input[type="date"]:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+input[type="file"] {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+button[type="submit"] {
+  padding: 10px;
+  width: 100%;
+  margin-right: 0;
+}
+
+/* ── Lien bouton (création de compte) ── */
+a.button {
+  display: block;
+  text-align: center;
+  margin: 12px auto 0;
+  width: 400px;
+  padding: 10px;
+  background: var(--surface);
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  text-decoration: none;
+  color: var(--text);
+  font-weight: bold;
+  font-size: 14px;
+}
+
+a.button:hover { background: var(--row-hover); }
+
+/* ── Lien validation ── */
+#validationLink {
+  display: block;
+  text-align: center;
+  margin-top: 16px;
+  font-size: 14px;
+  color: var(--text);
+}
+
+#validationLink a {
+  color: var(--accent);
+  font-weight: bold;
+}
+
+/* ── Étoiles ── */
+.stars {
+  display: inline-flex;
+  gap: 4px;
+  vertical-align: middle;
+}
+
+.star {
+  font-size: 24px;
+  color: var(--star-off);
+  cursor: pointer;
+  user-select: none;
+  transition: color .1s, transform .1s;
+  line-height: 1;
+}
+
+.star.active { color: var(--star-on); }
+.star:hover { transform: scale(1.2); }
+
+.vote-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.vote-label, .vote-row span.vote-label {
+  width: 90px;
+  flex-shrink: 0;
+  color: var(--muted);
+}
+
+/* ── Utilitaires ── */
+.hide { display: none; }

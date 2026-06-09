@@ -1,171 +1,52 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles/base.css">
+  <script src="scripts/app.js"></script>
   <title>Document</title>
 </head>
 
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: Arial, sans-serif;
-    color: #333;
-    background-color: rgba(5, 173, 78, 0.774);
-    min-height: 100vh;
-  }
-
-  
-  header {
-    display: flex;
-    justify-content: center;
-    padding: 20px 0;
-  }
-
-  .menu {
-    display: flex;
-    gap: 20px;
-    align-items: center;
-  }
-
-  .menu a {
-    text-decoration: none;
-    color: #333;
-    font-weight: bold;
-  }
-
-  .menu a:hover { text-decoration: underline; }
-
-  
-  div {
-    display: flex;
-    justify-content: center;
-    padding-top: 30px;
-  }
-
-  form {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    background: white;
-    padding: 32px;
-    border-radius: 8px;
-    width: 320px;
-    margin: 30px auto 0;
-  }
-
-  input {
-    padding: 10px 12px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
-    font-family: Arial, sans-serif;
-  }
-
-  input:focus {
-    outline: none;
-    border-color: #2d6a4f;
-  }
-
-  button[type="submit"] {
-    padding: 10px;
-    background: #2d6a4f;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-  }
-
-  button[type="submit"]:hover { background: #235c42; }
-
-  
-  a.button {
-    display: block;
-    text-align: center;
-    margin: 12px auto 0;
-    width: 320px;
-    padding: 10px;
-    background: white;
-    border-radius: 4px;
-    text-decoration: none;
-    color: #333;
-    font-weight: bold;
-    font-size: 14px;
-  }
-
-  a.button:hover { background: #f0f0f0; }
-
-  
-  .hide { display: none; }
-</style>
-
-<header>
-  <nav class="menu" id="menu"> 
-    <a href="index.html">Accueil</a> |
-    <a href="connexion_user.html" id="connexion">Connexion</a> |
-    <a href="challenges.html">Challenges</a> |
-  </nav>
-</header>
 
 <body>
+  <script>includes('_header.html')</script>
+
   <form id="loginform">
     <input type="text" class="form-control" placeholder="écrit un mail" name="mail" required>
     <input type="password" class="form-control" placeholder="écrit un mot de passe" name="password" required>
     <button type="submit"> Connexion</button>
-</form>
-<a href="creation_user.html" class="button">Création de compte</a>
+  </form>
+  <a href="creation_user.html" class="button">Création de compte</a>
 </body>
 
 <script>
-  const menu = document.getElementById("menu");
   const form = document.getElementById("loginform");
 
-  form.addEventListener("submit", async (e) => {e.preventDefault()
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault()
 
     const formData = {
-    mail: form.mail.value,
-    password: form.password.value
-  };
+      mail: form.mail.value,
+      password: form.password.value
+    };
 
-  const response = await fetch ("/api/auth/login", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(formData),
-    credentials: "include"
-  })
+    const response = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(formData),
+      credentials: "include"
+    })
 
-  const data = await response.json();
+    const data = await response.json();
 
-  if (data.succes) {
-    window.location.href = "/index.html"
-  }else{
-    alert("Email ou mot de passe incorrect");
-  }
-  });
-
-  async function userActive() {
-    const resp = await fetch ("/api/users/me", {credentials : "include"});
-    const data = await resp.json();
-    return data;
-  }
-
-  async function init() {
-
-    const user = await userActive();
-    console.log(user);
-    if (user && user.id) {
-      const span = document.createElement("span");
-      span.textContent = "Bonjour, " + user.firstname + " " + user.name;
-      menu.appendChild(span);
-      connexion.classList.add("hide");
+    if (data.succes) {
+      window.location.href = "/index.html"
+    } else {
+      alert("Email ou mot de passe incorrect");
     }
-
-  }
-
-  init();
+  });
 </script>

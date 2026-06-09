@@ -3,189 +3,29 @@
 
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="styles/base.css">
+    <script src="scripts/app.js"></script>
     <title>Participations</title>
 </head>
 
 <body>
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            color: #333;
-            background-color: rgba(5, 173, 78, 0.774);
-            min-height: 100vh;
-        }
-
-
-        header {
-            display: flex;
-            justify-content: center;
-            padding: 20px 0;
-        }
-
-        #menu {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        #menu a {
-            text-decoration: none;
-            color: #333;
-            font-weight: bold;
-        }
-
-        #menu a:hover {
-            text-decoration: underline;
-        }
-
-        #logout {
-            background: white;
-            border: 1px solid #333;
-            border-radius: 4px;
-            padding: 4px 10px;
-            cursor: pointer;
-            font-size: 13px;
-        }
-
-
-        main {
-            max-width: 1200px;
-            margin: 30px auto;
-            padding: 0 16px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        td {
-            padding: 12px 16px;
-            border-bottom: 1px solid #e0e0e0;
-            vertical-align: middle;
-        }
-
-        tr:last-child td {
-            border-bottom: none;
-        }
-
-        tr:hover td {
-            background: #f5f5f5;
-        }
-
-
-        td img {
-            max-width: 500px;
-            border-radius: 4px;
-            display: block;
-        }
-
-
-        button {
-            cursor: pointer;
-            padding: 5px 12px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-            background: white;
-            font-size: 13px;
-            margin-right: 6px;
-        }
-
-        button:hover {
-            background: #f0f0f0;
-        }
-
-        .btn-vote {
-            background: #2d6a4f;
-            color: white;
-            border-color: #2d6a4f;
-        }
-
-        .btn-vote:hover {
-            background: #235c42;
-        }
-
-
-        .stars {
-            display: inline-flex;
-            gap: 4px;
-            vertical-align: middle;
-        }
-
-        .star {
-            font-size: 24px;
-            color: #ccc;
-            cursor: pointer;
-            user-select: none;
-            transition: color .1s, transform .1s;
-            line-height: 1;
-        }
-
-        .star.active {
-            color: #e8a020;
-        }
-
-        .star:hover {
-            transform: scale(1.2);
-        }
-
-        #participationBody td>br {
-            display: none;
-        }
-
-        /* on retire les <br> visuellement */
-
-        .vote-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-
-        .vote-row span.vote-label {
-            width: 90px;
-            flex-shrink: 0;
-            color: #555;
-        }
-
-        .hide {
-            display: none;
-        }
-    </style>
-
-    <header>
-        <nav id="menu">
-            <a href="index.html">Accueil |</a>
-            <a id="connexion" href="connexion_user.html">Connexion |</a>
-            <a href="challenges.html">Challenges |</a>
-            <a id="creationChallenge" href="creation_challenge.html" class="hide">Créer un challenge</a>
-            <button id="logout" hidden>Déconnexion</button>
-        </nav>
-    </header>
+    <script>includes('_header.html')</script>
 
     <main>
+        <table>
+            <h2 class="titre">Challenge en cours</h2>
+            <tbody id="challengeBody"> </tbody>
+        </table>
+        <h2 class="titre">Participations</h2>
         <table>
             <tbody id="participationBody"></tbody>
         </table>
     </main>
 
     <script>
-        const logout = document.getElementById("logout");
-        const connexion = document.getElementById("connexion");
         const participationBody = document.getElementById("participationBody");
-        const menu = document.getElementById("menu");
-        const creationChallenge = document.getElementById("creationChallenge")
+        const Challenge = document.getElementById("challengeBody")
 
         async function fetchJSON(url, options) {
             const resp = await fetch(url, options);
@@ -193,24 +33,20 @@
         }
 
         async function init() {
-            // Récupération de l'utilisateur connecté
-            const user = await fetchJSON("/api/users/me", { credentials: "include" });
-            if (user?.id) {
-                menu.appendChild(Object.assign(document.createElement("span"), {
-                    textContent: ` | Bonjour, ${user.firstname} ${user.name}`
-                }));
-                connexion.hidden = true;
-                logout.hidden = false;
-                if (user.is_admin === 1) {
-                    creationChallenge.classList.remove("hide");
-                } else {
-                    creationChallenge.classList.add("hide");
-                }
-            }
+            const user = await getUser();
 
-            // Récupération des challenges actifs et de leurs participations
             const challenges = await fetchJSON("/api/challenges/active");
             for (const challenge of challenges) {
+
+                const trChallenge = document.createElement("tr");
+                trChallenge.innerHTML = `
+            <td><strong>${challenge.title}</strong></td>
+            <td>${challenge.description}</td>
+            <td><img src="${challenge.url}" style="max-width:200px"></td>
+            <td>Du ${challenge.date_start} au ${challenge.date_end}</td>
+        `;
+                Challenge.appendChild(trChallenge);
+
                 const participations = await fetchJSON(`/api/challenges/${challenge.id}/participations`);
                 for (const p of participations) {
                     renderParticipation(p, user);
@@ -257,6 +93,7 @@
             return wrap;
         }
         function renderParticipation(p, user) {
+
             // Ligne principale
             const tr = document.createElement("tr");
             tr.innerHTML = `
@@ -270,130 +107,128 @@
       `;
             participationBody.appendChild(tr);
 
-            // Ligne commentaires (masquée par défaut)
-            const trComments = document.createElement("tr");
-            trComments.hidden = true;
-            const tdComments = document.createElement("td");
-            tdComments.colSpan = 4;
-            trComments.appendChild(tdComments);
-            participationBody.appendChild(trComments);
+            if (user.id) {
+                // Ligne commentaires (masquée par défaut)
+                const trComments = document.createElement("tr");
+                trComments.hidden = true;
+                const tdComments = document.createElement("td");
+                tdComments.colSpan = 4;
+                trComments.appendChild(tdComments);
+                participationBody.appendChild(trComments);
 
-            // Ligne votes (masquée par défaut)
-            const trVotes = document.createElement("tr");
-            trVotes.hidden = true;
-            const tdVotes = document.createElement("td");
-            tdVotes.colSpan = 4;
-            trVotes.appendChild(tdVotes);
-            participationBody.appendChild(trVotes);
+                // Ligne votes (masquée par défaut)
+                const trVotes = document.createElement("tr");
+                trVotes.hidden = true;
+                const tdVotes = document.createElement("td");
+                tdVotes.colSpan = 4;
+                trVotes.appendChild(tdVotes);
+                participationBody.appendChild(trVotes);
 
-            // Bouton commentaires
-            tr.querySelector(".btn-comments").addEventListener("click", async (e) => {
-                const btn = e.target;
-                if (!trComments.hidden) {
-                    trComments.hidden = true;
-                    btn.textContent = "Afficher commentaires";
-                    return;
-                }
-
-                tdComments.textContent = "Chargement...";
-                trComments.hidden = false;
-                btn.textContent = "Masquer commentaires";
-
-                const comments = await fetchJSON(`/api/comments/participations/${p.participation_id}`);
-                tdComments.innerHTML = "";
-                if (comments.length === 0) {
-                    tdComments.textContent = "Aucun commentaire.";
-                } else {
-                    comments.forEach(c => {
-                        tdComments.appendChild(Object.assign(document.createElement("p"), { textContent: c.content }));
-                    });
-                }
-                const input = document.createElement("input");
-                input.type = "text";
-                input.placeholder = "Écrire un commentaire...";
-                input.style.cssText = "padding:6px 10px; border:1px solid #ccc; border-radius:4px; font-size:13px; width:300px; margin-top:8px;";
-
-                const btnComment = document.createElement("button");
-                btnComment.textContent = "Envoyer";
-                btnComment.style.cssText = "background:#2d6a4f; color:white; border-color:#2d6a4f;";
-
-                const form = document.createElement("div");
-                form.style.cssText = "display:flex; gap:8px; margin-top:8px;";
-                form.appendChild(input);
-                form.appendChild(btnComment);
-                tdComments.appendChild(form);
-
-                btnComment.addEventListener("click", async () => {
-                    if (!input.value.trim()) return;
-
-                    const data = await fetchJSON("/api/comments", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        credentials: "include",
-                        body: JSON.stringify({
-                            content: input.value.trim(),
-                            participation_id: p.participation_id,
-                            user_id: user.id
-                        })
-                    });
-
-                    if (data.succes) {
-                        const p_elem = document.createElement("p");
-                        p_elem.textContent = input.value.trim();
-                        tdComments.insertBefore(p_elem, form);
-                        input.value = "";
-                    } else {
-                        alert("Erreur lors de l'envoi du commentaire.");
+                // Bouton commentaires
+                tr.querySelector(".btn-comments").addEventListener("click", async (e) => {
+                    const btn = e.target;
+                    if (!trComments.hidden) {
+                        trComments.hidden = true;
+                        btn.textContent = "Afficher commentaires";
+                        return;
                     }
-                });
-            });
 
-            // Bouton vote
-            tr.querySelector(".btn-vote").addEventListener("click", () => {
-                if (!trVotes.hidden) {
-                    trVotes.hidden = true;
-                    return;
-                }
+                    tdComments.textContent = "Chargement...";
+                    trComments.hidden = false;
+                    btn.textContent = "Masquer commentaires";
 
-                tdVotes.innerHTML = "";
-                const starsCreative = createStars(tdVotes, "Créativité");
-                const starsTechnical = createStars(tdVotes, "Technique");
-                const starsTheme = createStars(tdVotes, "Thème");
-
-                const btnSend = document.createElement("button");
-                btnSend.textContent = "Envoyer";
-                tdVotes.appendChild(btnSend);
-
-                btnSend.addEventListener("click", async () => {
-                    const body = {
-                        creative_note: starsCreative._getValue(),
-                        technical_note: starsTechnical._getValue(),
-                        theme_note: starsTheme._getValue(),
-                        user_id: user.id,
-                        participation_id: p.participation_id
-                    };
-
-                    const data = await fetchJSON("/api/votes", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(body),
-                        credentials: "include"
-                    });
-
-                    if (data.succes) {
-                        window.location.href = "/index.html";
+                    const comments = await fetchJSON(`/api/comments/participations/${p.participation_id}`);
+                    tdComments.innerHTML = "";
+                    if (comments.length === 0) {
+                        tdComments.textContent = "Aucun commentaire.";
                     } else {
-                        alert("La notation n'a pas été prise en compte.");
+                        comments.forEach(c => {
+                            tdComments.appendChild(Object.assign(document.createElement("p"), { textContent: c.content }));
+                        });
                     }
+                    const input = document.createElement("input");
+                    input.type = "text";
+                    input.placeholder = "Écrire un commentaire...";
+                    input.style.cssText = "padding:6px 10px; border:1px solid #ccc; border-radius:4px; font-size:13px; width:300px; margin-top:8px;";
+
+                    const btnComment = document.createElement("button");
+                    btnComment.textContent = "Envoyer";
+                    btnComment.style.cssText = "background:#2d6a4f; color:white; border-color:#2d6a4f;";
+
+                    const form = document.createElement("div");
+                    form.style.cssText = "display:flex; gap:8px; margin-top:8px;";
+                    form.appendChild(input);
+                    form.appendChild(btnComment);
+                    tdComments.appendChild(form);
+
+                    btnComment.addEventListener("click", async () => {
+                        if (!input.value.trim()) return;
+
+                        const data = await fetchJSON("/api/comments", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            credentials: "include",
+                            body: JSON.stringify({
+                                content: input.value.trim(),
+                                participation_id: p.participation_id,
+                                user_id: user.id
+                            })
+                        });
+
+                        if (data.succes) {
+                            const p_elem = document.createElement("p");
+                            p_elem.textContent = input.value.trim();
+                            tdComments.insertBefore(p_elem, form);
+                            input.value = "";
+                        } else {
+                            alert("Erreur lors de l'envoi du commentaire.");
+                        }
+                    });
                 });
 
-                trVotes.hidden = false;
-            });
+                // Bouton vote
+                tr.querySelector(".btn-vote").addEventListener("click", () => {
+                    if (!trVotes.hidden) {
+                        trVotes.hidden = true;
+                        return;
+                    }
+
+                    tdVotes.innerHTML = "";
+                    const starsCreative = createStars(tdVotes, "Créativité");
+                    const starsTechnical = createStars(tdVotes, "Technique");
+                    const starsTheme = createStars(tdVotes, "Thème");
+
+                    const btnSend = document.createElement("button");
+                    btnSend.textContent = "Envoyer";
+                    tdVotes.appendChild(btnSend);
+
+                    btnSend.addEventListener("click", async () => {
+                        const body = {
+                            creative_note: starsCreative._getValue(),
+                            technical_note: starsTechnical._getValue(),
+                            theme_note: starsTheme._getValue(),
+                            user_id: user.id,
+                            participation_id: p.participation_id
+                        };
+
+                        const data = await fetchJSON("/api/votes", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify(body),
+                            credentials: "include"
+                        });
+
+                        if (data.succes) {
+                            window.location.href = "/index.html";
+                        } else {
+                            alert("La notation n'a pas été prise en compte.");
+                        }
+                    });
+
+                    trVotes.hidden = false;
+                });
+            }
         }
-        logout.addEventListener("click", async () => {
-            await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
-            window.location.reload();
-        });
 
         init();
     </script>

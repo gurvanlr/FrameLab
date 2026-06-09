@@ -5,17 +5,18 @@ CREATE TABLE IF NOT EXISTS  users (
 	name        VARCHAR(127) NOT NULL,
 	firstname   VARCHAR(127) NOT NULL,
 	is_admin    BOOLEAN NOT NULL,
-	registrated DATETIME
+	registrated DATETIME,
+	validated 	BOOLEAN DEFAULT FALSE
 );
 
 CREATE TABLE IF NOT EXISTS challenges (
-	id INT PRIMARY KEY AUTO_INCREMENT,
-	title VARCHAR(127) NOT NULL,
+	id 			INT PRIMARY KEY AUTO_INCREMENT,
+	title 		VARCHAR(127) NOT NULL,
 	description TEXT,
-	url VARCHAR(127) NOT NULL,
-	date_start DATE NOT NULL,
-	date_end DATE NOT NULL,
-	is_active BOOLEAN NOT NULL
+	url 		VARCHAR(127) NOT NULL,
+	date_start 	DATE NOT NULL,
+	date_end 	DATE NOT NULL,
+	is_active 	BOOLEAN NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS participations (
@@ -31,21 +32,21 @@ CREATE TABLE IF NOT EXISTS participations (
 );
 
 CREATE TABLE IF NOT EXISTS votes (
-	id INT PRIMARY KEY AUTO_INCREMENT,
-	creative_note INT NOT NULL,
-	technical_note INT NOT NULL,
-	theme_note INT NOT NULL,
-	created DATE,
+	id 				 INT PRIMARY KEY AUTO_INCREMENT,
+	creative_note 	 INT NOT NULL,
+	technical_note 	 INT NOT NULL,
+	theme_note 		 INT NOT NULL,
+	created 		 DATE,
 	participation_id INT REFERENCES participations(id),
-	user_id INT REFERENCES users(id),
-	UNIQUE INDEX (user_id,participation_id) 
+	user_id 		 INT REFERENCES users(id),
+	UNIQUE 		     INDEX (user_id,participation_id) 
 );
 
 CREATE TABLE IF NOT EXISTS comments (
-	id INT PRIMARY KEY AUTO_INCREMENT,
-	content TEXT NOT NULL,
-	created DATETIME,
-	is_visible BOOLEAN,
-	user_id INT REFERENCES users(id),
+	id 				 INT PRIMARY KEY AUTO_INCREMENT,
+	content 		 TEXT NOT NULL,
+	created 		 DATETIME,
+	is_visible  	 BOOLEAN,
+	user_id INT 	 REFERENCES users(id),
 	participation_id INT REFERENCES participations(id)
 );

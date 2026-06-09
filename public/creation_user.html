@@ -4,108 +4,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles/base.css">
+  <script src="scripts/app.js"></script>
   <title>Document</title>
 </head>
 
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: Arial, sans-serif;
-    color: #333;
-    background-color: rgba(5, 173, 78, 0.774);
-    min-height: 100vh;
-  }
-
-  
-  header {
-    display: flex;
-    justify-content: center;
-    padding: 20px 0;
-  }
-
-  .menu {
-    display: flex;
-    gap: 20px;
-    align-items: center;
-  }
-
-  .menu a {
-    text-decoration: none;
-    color: #333;
-    font-weight: bold;
-  }
-
-  .menu a:hover { text-decoration: underline; }
-
-  
-  form {
-    background: white;
-    padding: 32px;
-    border-radius: 8px;
-    width: 320px;
-    margin: 30px auto 0;
-  }
-
-  .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  input {
-    padding: 10px 12px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
-    font-family: Arial, sans-serif;
-  }
-
-  input:focus {
-    outline: none;
-    border-color: #2d6a4f;
-  }
-
-  button[type="submit"] {
-    padding: 10px;
-    background: #2d6a4f;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-    width: 100%;
-  }
-
-  button[type="submit"]:hover { background: #235c42; }
-
-  
-  #validationLink {
-    display: block;
-    text-align: center;
-    margin-top: 16px;
-    font-size: 14px;
-  }
-
-  #validationLink a {
-    color: #2d6a4f;
-    font-weight: bold;
-  }
-
-  
-  .hide { display: none; }
-</style>
-
-<header>
-  <nav class="menu" id="menu">
-    <a href="index.html">Accueil</a> |
-    <a href="connexion_user.html" id="connexion">Connexion</a> |
-    <a href="challenges.html">Challenges</a> |
-  </nav>
-</header>
 
 <body>
+  <script>includes('_header.html')</script>
+
   <form id="registerform">
     <div class="form-group">
       <input type="mail" class="form-control" placeholder="écrit un mail" name="mail">
@@ -122,7 +29,6 @@
 </html>
 
 <script>
-  const menu = document.getElementById("menu");
   const form = document.getElementById("registerform");
   const validation = document.getElementById("validationLink")
 
@@ -152,31 +58,10 @@
       validation.textContent = "merci d'appuyer sur ce lien pour valider le compte : ";
       const link = document.createElement("a");
       link.textContent = "validation";
-      link.href = "/validation.html?validation_token="+data.token;
+      link.href = "/validation.html?validation_token=" + data.token;
       validation.appendChild(link);
     } else {
       alert("Email déjà utilisé");
     }
   });
-
-  async function userActive() {
-    const resp = await fetch("/api/users/me", { credentials: "include" });
-    const data = await resp.json();
-    return data;
-  }
-
-  async function init() {
-
-    const user = await userActive();
-    console.log(user);
-    if (user && user.id) {
-      const span = document.createElement("span");
-      span.textContent = "Bonjour, " + user.firstname + " " + user.name;
-      menu.appendChild(span);
-      connexion.classList.add("hide");
-    }
-
-  }
-
-  init();
 </script>

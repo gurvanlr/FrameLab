@@ -6,7 +6,7 @@ export async function authByCredentials(request, response) {
     const user = await getUserByMail(request.body.mail);
     if (await bcrypt.compare(request.body.password, user.password)) {
         const payload = { id: user.id };
-        const token = jwt.sign(payload, "lotrmieuxquestarwars", { expiresIn: "7 days" }); //process.env.SECRET_KEY
+        const token = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: "7 days" }); //process.env.SECRET_KEY
         response.cookie("token", token, { maxAge: 1000 * 60 * 60 * 24 * 7 });
         response.json({
             success: true,

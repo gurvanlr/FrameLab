@@ -32,6 +32,6 @@ export async function auth(email) {
 }
 
 export async function is_active(id) {
-    const row =  await db.update ("UPDATE users SET validated WHERE id = ?", [id]);
+    const row =  await db.update ("UPDATE users SET validated = 1 WHERE id = ?", [id]);
     return row ; 
 }

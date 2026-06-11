@@ -4,39 +4,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles/base.css">
+    <script src="scripts/app.js"></script>
     <title>Document</title>
 </head>
 
 <body>
-<div>
-    <span id="state"></pan>
+    <script>includes('_header.html')</script>
+<div class="center">
+    <span id="state"></span>
+    <span id="action"></span>
 </div>
 </body>
 
 <script>
-    const span = document.getElementById("state")
+    const state = document.getElementById("state")
+    const action = document.getElementById("state")
     const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('validation_token');
+    const id = urlParams.get ('id')
 
     async function is_active(token) {
-       const data =  await fetch ("/api/" + token.id + "/" + token)
-        if(data.sucess) {
-            span.textContent = "ton compte a bien été créer, tu peux maintenant appuyer sur le boutons pour te connecté   ";
+       const response = await fetch ("/api/users/" + id + "/validation", {method: "PUT"});
+       const data = await response.json ();
+       console.log (data);
+
+        if(data.success) {
+            state.textContent = "ton compte a bien été créer, tu peux maintenant appuyer sur le boutons pour te connecté   ";
             const button = document.createElement ("button");
             button.textContent = "page de connexion"
             button.addEventListener ("click", () => window.location.href = "connexion_user.html");
-            span.appendChild(button);
+            action.appendChild(button);
         } else {
-            span.textContent = "ton compte n'as pas bien été créer, tu peux appuyer sur le button pour revenir a l'accueil   ";
+            state.textContent = "ton compte n'as pas bien été créer, tu peux appuyer sur le button pour revenir a l'accueil   ";
             const button = document.createElement ("button");
             button.textContent = "accueil"
             button.addEventListener ("click", () => window.location.href = "index.html");
-            span.appendChild(button);
+            action.appendChild(button);
         }
 
     }
 
-    is_active();
+    if (id) {
+        is_active(id);
+    } else {
+        state.textContent = "lien de validation invalide"
+    }
 </script>
 
 </html>

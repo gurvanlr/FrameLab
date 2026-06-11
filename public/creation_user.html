@@ -58,7 +58,7 @@
       validation.textContent = "merci d'appuyer sur ce lien pour valider le compte : ";
       const link = document.createElement("a");
       link.textContent = "validation";
-      link.href = "/validation.html?validation_token=" + data.token;
+      link.href = `/validation.html?id=${data.id}`;
       validation.appendChild(link);
     } else {
       alert("Email déjà utilisé");

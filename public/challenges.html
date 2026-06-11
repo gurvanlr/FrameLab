@@ -29,43 +29,62 @@
   }
 
   async function init() {
+    let me = null;
+    try {
+        me = await fetchJSON("/api/users/me", { credentials: "include" });
+    } catch (e) {}
+
     const challenges = await fetchJSON("/api/challenges");
     for (const challenge of challenges) {
-      const tr = document.createElement("tr");
+        const tr = document.createElement("tr");
 
-      const tdTitle = document.createElement("td");
-      tdTitle.textContent = challenge.title;
-      tr.appendChild(tdTitle);
+        const tdTitle = document.createElement("td");
+        tdTitle.textContent = challenge.title;
+        tr.appendChild(tdTitle);
 
-      const tdDesc = document.createElement("td");
-      tdDesc.textContent = challenge.description;
-      tr.appendChild(tdDesc);
+        const tdDesc = document.createElement("td");
+        tdDesc.textContent = challenge.description;
+        tr.appendChild(tdDesc);
 
-      const tdImg = document.createElement("td");
-      const img = document.createElement("img");
-      img.src = challenge.url;
-      tdImg.appendChild(img);
-      tr.appendChild(tdImg);
+        const tdImg = document.createElement("td");
+        const img = document.createElement("img");
+        img.src = challenge.url;
+        tdImg.appendChild(img);
+        tr.appendChild(tdImg);
 
-      const tdStart = document.createElement("td");
-      tdStart.textContent = challenge.date_start;
-      tr.appendChild(tdStart);
+        const tdStart = document.createElement("td");
+        tdStart.textContent = challenge.date_start;
+        tr.appendChild(tdStart);
 
-      const tdEnd = document.createElement("td");
-      tdEnd.textContent = challenge.date_end;
-      tr.appendChild(tdEnd);
+        const tdEnd = document.createElement("td");
+        tdEnd.textContent = challenge.date_end;
+        tr.appendChild(tdEnd);
 
-      const tdBtn = document.createElement("td");
-      const btn = document.createElement("a");
-      btn.className = "btn-participations";
-      btn.textContent = "Voir les participations";
-      btn.href = `participations.html?challenge_id=${challenge.id}`;
-      tdBtn.appendChild(btn);
-      tr.appendChild(tdBtn);
+        const tdBtn = document.createElement("td");
+        const btn = document.createElement("a");
+        btn.className = "btn-participations";
+        btn.textContent = "Voir les participations";
+        btn.href = `participations.html?challenge_id=${challenge.id}`;
+        tdBtn.appendChild(btn);
 
-      challengeBody.appendChild(tr);
+        if (me && me.is_admin) {
+            const btnToggle = document.createElement("button");
+            btnToggle.textContent = challenge.is_active ? "Désactiver" : "Activer";
+            btnToggle.addEventListener("click", async () => {
+              console.log("click sur challenge", challenge.id);
+                await fetch("/api/challenges/" + challenge.id + "/active", {
+                    method: "PUT",
+                    credentials: "include"
+                });
+                window.location.reload();
+            });
+            tdBtn.appendChild(btnToggle);
+        }
+
+        tr.appendChild(tdBtn);
+        challengeBody.appendChild(tr);
     }
-  }
+}
 
 
   init();

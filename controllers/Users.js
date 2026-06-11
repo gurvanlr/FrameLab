@@ -15,15 +15,15 @@ export async function creationUser(request, response) {
         }
     }
     const password = await bcrypt.hash(request.body.password, 10);
-    const name = await bcrypt.hash(request.body.name, 10);
 
     const insertedId = await postUser(request.body.mail, password, request.body.name, request.body.firstname);
 
     const payload = { id: insertedId };
-    const validationToken = jwt.sign(payload, "lotrmieuxquestarwars", { expiresIn: "1 hours" });
+    const validationToken = jwt.sign(payload, process.env.SECRET_KEY, { expiresIn: "1 hours" });
     response.json({
         success: true,
-        token: validationToken
+        id: insertedId,
+        validation_token: validationToken
     });
 }
 
@@ -38,37 +38,33 @@ export async function getMe(request, response) {
 }
 
 export async function connexion_user(request, response) {
-    const users = await getUsers();
+    const user = await getUserByMail(request.body.mail);
 
-    for (let user of users) {
-        if (user.mail == request.body.mail) {
+        if (user) {
             const valid = await bcrypt.compare(request.body.password, user.password)
             if (valid) {
-                return response.json("compte connecté");
+                if (!user.validated) {
+                    return response.json({ success: false, message: "Compte non validé" });
+                }
+                const token = jwt.sign({ id: user.id }, process.env.SECRET_KEY, { expiresIn: "7d" });
+                response.cookie("token", token, { httpOnly: true });
+                return response.json({ success: true });
             }
             else {
-                return response.json("l'adresse mail ou le mot de passe est incorect");
+                return response.json({success: false , message: "l'adresse mail ou le mot de passe est incorect"});
             }
         }
 
-    }
-    return response.json("l'adresse mail ou le mot de passe est incorect");
+    return response.json({success: false , message: "Le compte n'existe pas"});
 }
 
 export async function validation(request, response) {
-
-    if (request.token != null) {
-        const tokenData = jwt.verify(token, "lotrmieuxquestarwars");
-        const user = await getUser(tokenData.id);
-        if (user) {
-            await is_active(user.id);
-            response.json({
-                success: true
-            });
-        }
+    const { id } = request.params;
+    const user = await getUser(id);
+    if (user) {
+        await is_active(id);
+        return response.json({ success: true });
     } else {
-        response.json({
-            success: false
-        })
+        return response.json({ success: false, message: "Utilisateur introuvable" });
     }
 }

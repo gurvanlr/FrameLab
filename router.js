@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { creationUser, getMe, rechercheUser, validation } from "./controllers/Users.js"
-import { allChallenges, creationChallenge, rechercheChallengeActive, rechercheChallengeByTitle } from "./controllers/Challenges.js";
+import { connexion_user, creationUser, getMe, rechercheUser, validation } from "./controllers/Users.js"
+import { allChallenges, creationChallenge, rechercheChallengeActive, rechercheChallengeByTitle, setChallenge, } from "./controllers/Challenges.js";
 import { creationParticipation, allParticipations, rechercheParticipationByID, rechercheParticipationByUser_ID, getParticipationAndUserByChallenge } from "./controllers/participations.js"
 import { authByCredentials, authbyTokens, logout } from "./controllers/Authentification.js";
 import { upload} from "./controllers/upload.js";
@@ -9,13 +9,14 @@ import { getCommentByParticipationId,postComment,rechercheComment} from "./contr
 
 
 
+
 const router = Router();
 
 router.post("/users", creationUser);
 router.get("/users/me", authbyTokens, getMe);
 router.get("/users/:id", rechercheUser);
-router.post("/auth/login", authByCredentials);
-router.put("/users/:id/:validation_token",validation);
+router.post("/auth/login", connexion_user);
+router.put("/users/:id/validation",validation);
 router.post("/auth/logout", logout);
 
 router.post("/challenges", upload.single("uploaded_file"), creationChallenge);
@@ -23,6 +24,7 @@ router.get("/challenges", allChallenges);
 router.get("/challenges/active", rechercheChallengeActive);
 router.get("/challenges/:id/participations",getParticipationAndUserByChallenge);
 router.get("/challenges/:title", rechercheChallengeByTitle);
+router.put("/challenges/:id/active", authbyTokens, setChallenge);
 
 router.post("/participations", upload.single("uploaded_file"), creationParticipation);
 router.get("/participations", allParticipations);

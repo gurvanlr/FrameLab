@@ -1,5 +1,5 @@
 import { response } from "express";
-import { postChallenge, getChallenges, getChallengeByTitle, getChallengeActive } from "../models/Challenge.js"
+import { postChallenge, getChallenges, getChallengeByTitle, getChallengeActive, getChallengeById, activeChallenge, inactiveChallenge } from "../models/Challenge.js"
 
 export async function creationChallenge(request, response) {
     const url = "/upload/" + request.file.filename;
@@ -20,4 +20,18 @@ export async function rechercheChallengeByTitle(request, response) {
 export async function rechercheChallengeActive(request, response) {
     const challenges = await getChallengeActive();
     response.json(challenges);
+}
+
+export async function setChallenge(request, response) {
+    const id = request.params.id;
+    const challenge = await getChallengeById (id);
+    console.log("challenge:", challenge);
+
+    if (challenge.is_active == 0) {
+        await activeChallenge (id);
+        response.json ({success: true , message: "Le challenge est maintenant active"});
+    } else if (challenge.is_active == 1) {
+        await inactiveChallenge (id);
+        response.json ({success: true , message: "Le challenge est maintenant inactive"});
+    }
 }

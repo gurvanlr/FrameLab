@@ -17,8 +17,23 @@ export async function getChallengeByTitle(challengeTitle) {
     return rows;
 }
 
+export async function getChallengeById(id) {
+    const row = await db.getrow ("SELECT * FROM challenges WHERE id = ?", [id]);
+    return row;
+    
+}
+
 export async function getChallengeActive() {
-    //const rows = await db.getall('SELECT * FROM challenges WHERE date_start <= NOW() && date_end >= NOW()')
     const rows = await db.getall("SELECT * FROM challenges WHERE is_active = 1")
     return rows;
+}
+
+export async function activeChallenge(id) {
+    const row =  await db.update ("UPDATE challenges SET is_active = 1 WHERE id = ?", [id]);
+    return row ; 
+}
+
+export async function inactiveChallenge(id) {
+    const row =  await db.update ("UPDATE challenges SET is_active = 0 WHERE id = ?", [id]);
+    return row ; 
 }

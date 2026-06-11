@@ -305,3 +305,26 @@ a.button:hover { background: var(--row-hover); }
 
 /* ── Utilitaires ── */
 .hide { display: none; }
+
+/*── Trie──*/
+.sort-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.sort-btn {
+  padding: 6px 14px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  background: transparent;
+  border-radius: 4px;
+}
+
+.sort-btn.active {
+  background: #333;
+  color: #fff;
+  border-color: #333;
+}

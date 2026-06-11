@@ -11,83 +11,114 @@
 
 
 <body>
-
   <script>includes('_header.html')</script>
-  
+
+  <div class="sort-controls">
+    <label>Trier par date de début :</label>
+    <button id="btnAsc" class="sort-btn active">↑ Croissant</button>
+    <button id="btnDesc" class="sort-btn">↓ Décroissant</button>
+  </div>
+
   <div class="center">
     <table>
       <tbody id="challengeBody"></tbody>
     </table>
   </div>
 </body>
+
 <script>
   const challengeBody = document.getElementById("challengeBody");
+  let allChallenges = [];
+  let me = null;
+  let sortOrder = "asc";
 
   async function fetchJSON(url, opts) {
     const resp = await fetch(url, opts);
     return resp.json();
   }
 
-  async function init() {
-    let me = null;
-    try {
-        me = await fetchJSON("/api/users/me", { credentials: "include" });
-    } catch (e) {}
+  function renderChallenges(challenges) {
+    challengeBody.innerHTML = "";
+    const sorted = [...challenges].sort((a, b) => {
+      const da = new Date(a.date_start);
+      const db = new Date(b.date_start);
+      return sortOrder === "asc" ? da - db : db - da;
+    });
 
-    const challenges = await fetchJSON("/api/challenges");
-    for (const challenge of challenges) {
-        const tr = document.createElement("tr");
+    for (const challenge of sorted) {
+      const tr = document.createElement("tr");
 
-        const tdTitle = document.createElement("td");
-        tdTitle.textContent = challenge.title;
-        tr.appendChild(tdTitle);
+      const tdTitle = document.createElement("td");
+      tdTitle.textContent = challenge.title;
+      tr.appendChild(tdTitle);
 
-        const tdDesc = document.createElement("td");
-        tdDesc.textContent = challenge.description;
-        tr.appendChild(tdDesc);
+      const tdDesc = document.createElement("td");
+      tdDesc.textContent = challenge.description;
+      tr.appendChild(tdDesc);
 
-        const tdImg = document.createElement("td");
-        const img = document.createElement("img");
-        img.src = challenge.url;
-        tdImg.appendChild(img);
-        tr.appendChild(tdImg);
+      const tdImg = document.createElement("td");
+      const img = document.createElement("img");
+      img.src = challenge.url;
+      tdImg.appendChild(img);
+      tr.appendChild(tdImg);
 
-        const tdStart = document.createElement("td");
-        tdStart.textContent = challenge.date_start;
-        tr.appendChild(tdStart);
+      const tdStart = document.createElement("td");
+      tdStart.textContent = challenge.date_start;
+      tr.appendChild(tdStart);
 
-        const tdEnd = document.createElement("td");
-        tdEnd.textContent = challenge.date_end;
-        tr.appendChild(tdEnd);
+      const tdEnd = document.createElement("td");
+      tdEnd.textContent = challenge.date_end;
+      tr.appendChild(tdEnd);
 
-        const tdBtn = document.createElement("td");
-        const btn = document.createElement("a");
-        btn.className = "btn-participations";
-        btn.textContent = "Voir les participations";
-        btn.href = `participations.html?challenge_id=${challenge.id}`;
-        tdBtn.appendChild(btn);
+      const tdBtn = document.createElement("td");
+      const btn = document.createElement("a");
+      btn.className = "btn-participations";
+      btn.textContent = "Voir les participations";
+      btn.href = `participations.html?challenge_id=${challenge.id}`;
+      tdBtn.appendChild(btn);
 
-        if (me && me.is_admin) {
-            const btnToggle = document.createElement("button");
-            btnToggle.textContent = challenge.is_active ? "Désactiver" : "Activer";
-            btnToggle.addEventListener("click", async () => {
-              console.log("click sur challenge", challenge.id);
-                await fetch("/api/challenges/" + challenge.id + "/active", {
-                    method: "PUT",
-                    credentials: "include"
-                });
-                window.location.reload();
-            });
-            tdBtn.appendChild(btnToggle);
-        }
+      if (me && me.is_admin) {
+        const btnToggle = document.createElement("button");
+        btnToggle.textContent = challenge.is_active ? "Désactiver" : "Activer";
+        btnToggle.addEventListener("click", async () => {
+          await fetch("/api/challenges/" + challenge.id + "/active", {
+            method: "PUT",
+            credentials: "include"
+          });
+          window.location.reload();
+        });
+        tdBtn.appendChild(btnToggle);
+      }
 
-        tr.appendChild(tdBtn);
-        challengeBody.appendChild(tr);
+      tr.appendChild(tdBtn);
+      challengeBody.appendChild(tr);
     }
-}
+  }
 
+  document.getElementById("btnAsc").addEventListener("click", () => {
+    sortOrder = "asc";
+    document.getElementById("btnAsc").classList.add("active");
+    document.getElementById("btnDesc").classList.remove("active");
+    renderChallenges(allChallenges);
+  });
+
+  document.getElementById("btnDesc").addEventListener("click", () => {
+    sortOrder = "desc";
+    document.getElementById("btnDesc").classList.add("active");
+    document.getElementById("btnAsc").classList.remove("active");
+    renderChallenges(allChallenges);
+  });
+
+  async function init() {
+    try {
+      me = await fetchJSON("/api/users/me", { credentials: "include" });
+    } catch (e) {}
+    allChallenges = await fetchJSON("/api/challenges");
+    renderChallenges(allChallenges);
+  }
 
   init();
 </script>
+</html>
 
 </html>
